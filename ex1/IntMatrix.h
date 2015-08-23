@@ -19,7 +19,7 @@ public:
 	IntMatrix& operator*=(const IntMatrix& other);
 	friend ostream& operator<<(ostream& out, const IntMatrix& mat);
 	friend istream& operator>>(istream& in, IntMatrix& mat);
-	IntMatrix trans(const IntMatrix& toTrans) const;
+	IntMatrix& trans() const;
 	int trace() const;
 
 private:

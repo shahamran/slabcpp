@@ -54,17 +54,17 @@ IntMatrix::~IntMatrix()
 	delete[] _data;
 }
 
-IntMatrix IntMatrix::trans(const IntMatrix& toTrans) const
+IntMatrix& IntMatrix::trans() const
 {
-	IntMatrix result(_cols, _rows);
+	IntMatrix* result = new IntMatrix(_cols, _rows);
 	for (size_t i = 0; i < _rows; i++)
 	{
 		for (size_t j = 0; j < _cols; j++)
 		{
-			result._data[j][i] = this->_data[i][j];
+			result->_data[j][i] = this->_data[i][j];
 		}
 	}
-	return result;
+	return *result;
 }
 
 int IntMatrix::trace() const
@@ -102,9 +102,9 @@ IntMatrix& IntMatrix::operator=(const IntMatrix& other)
 
 IntMatrix& IntMatrix::operator+(const IntMatrix& other) const
 {
-	IntMatrix result(*this);
-	result += other;
-	return result;
+	IntMatrix* result = new IntMatrix(*this);
+	*result += other;
+	return *result;
 }
 
 IntMatrix& IntMatrix::operator+=(const IntMatrix& other)
@@ -116,13 +116,14 @@ IntMatrix& IntMatrix::operator+=(const IntMatrix& other)
 			this->_data[i][j] += other._data[i][j];
 		}
 	}
+	return *this;
 }
 
 IntMatrix& IntMatrix::operator*(const IntMatrix& other) const
 {
-	IntMatrix result(*this);
-	result *= other;
-	return result;
+	IntMatrix* result = new IntMatrix(*this);
+	*result *= other;
+	return *result;
 }
 
 IntMatrix& IntMatrix::operator*=(const IntMatrix& other)
@@ -163,7 +164,7 @@ istream& operator>>(istream& in, IntMatrix& mat)
 	{
 		for (size_t j = 0; j < mat._cols; j++)
 		{
-			in >> mat._data[i][j] >> ",";
+			in >> mat._data[i][j];
 		}
 	}
 	return in;

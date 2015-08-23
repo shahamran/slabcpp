@@ -22,6 +22,6 @@ IntMatrix.o: IntMatrix.h IntMatrix.cpp
 	${CC} ${C_FLAGS} -c IntMatrix.cpp
 
 clean:
-	rm -fv *.o IntMatrixMainDriver* 
+	rm -fv *.o IntMatrixMainDriver *.exe
 
-.PHONY clean all IntMatrix tar
+.PHONY: clean all IntMatrix tar

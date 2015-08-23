@@ -1,6 +1,7 @@
 #include "IntMatrix.h"
 #include <assert.h>
 #define DEFAULT_SIZE 1
+#define SEPARATOR ','
 
 void IntMatrix::swap(IntMatrix& toSwap)
 {
@@ -160,11 +161,14 @@ ostream& operator<<(ostream& out, const IntMatrix& mat)
 
 istream& operator>>(istream& in, IntMatrix& mat)
 {
+	string numStr;
 	for (size_t i = 0; i < mat._rows; i++)
 	{
+		getline(in, numStr, SEPARATOR);
+		istringstream iss(numStr);
 		for (size_t j = 0; j < mat._cols; j++)
 		{
-			in >> mat._data[i][j];
+			iss >> mat._data[i][j];
 		}
 	}
 	return in;

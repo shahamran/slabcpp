@@ -28,8 +28,8 @@ IntMatrix::IntMatrix(size_t rows, size_t cols)
 	: _rows(rows)
 	, _cols(cols)
 {
-	assert(rows > 0 && cols > 0 || rows == cols == 0);
-	if (rows == cols == 0)
+	assert( (rows > 0 && cols > 0) || ( (rows == cols) && (rows == 0) ) );
+	if (rows == 0)
 	{
 		_data = nullptr;
 	}
@@ -47,7 +47,6 @@ IntMatrix::IntMatrix(IntMatrix&& rvalue)
 	: IntMatrix()
 {
 	swap(rvalue);
-	return *this;
 }
 
 IntMatrix::IntMatrix(const IntMatrix& toCopy)
@@ -110,11 +109,11 @@ IntMatrix& IntMatrix::operator=(IntMatrix other)
 	return *this;
 } // At this point, other is destroyed and *this lives carrying its values.
 
-IntMatrix& IntMatrix::operator+(const IntMatrix& other) const
+IntMatrix IntMatrix::operator+(const IntMatrix& other) const
 {
-	IntMatrix* result = new IntMatrix(*this);
-	*result += other;
-	return *result;
+	IntMatrix result = IntMatrix(*this);
+	result += other;
+	return result;
 }
 
 IntMatrix& IntMatrix::operator+=(const IntMatrix& other)
@@ -130,24 +129,24 @@ IntMatrix& IntMatrix::operator+=(const IntMatrix& other)
 	return *this;
 }
 
-IntMatrix& IntMatrix::operator*(int scalar) const
+IntMatrix IntMatrix::operator*(int scalar) const
 {
-	IntMatrix* result = new IntMatrix(*this);
+	IntMatrix result = IntMatrix(*this);
 	for (size_t i = 0; i < _rows; i++)
 	{
 		for (size_t j = 0; j < _cols; j++)
 		{
-			result->_data[i][j] *= scalar;
+			result._data[i][j] *= scalar;
 		}
 	}
-	return *result;
+	return result;
 }
 
-IntMatrix& IntMatrix::operator*(const IntMatrix& other) const
+IntMatrix IntMatrix::operator*(const IntMatrix& other) const
 {
-	IntMatrix* result = new IntMatrix(*this);
-	*result *= other;
-	return *result;
+	IntMatrix result = IntMatrix(*this);
+	result *= other;
+	return result;
 }
 
 IntMatrix& IntMatrix::operator*=(const IntMatrix& other)
@@ -169,11 +168,11 @@ IntMatrix& IntMatrix::operator*=(const IntMatrix& other)
 	return *this;
 } // Same trick as with the = operator, tmp is being deleted now.
 
-IntMatrix& IntMatrix::operator-(const IntMatrix& other) const
+IntMatrix IntMatrix::operator-(const IntMatrix& other) const
 {
-	IntMatrix* result = new IntMatrix(*this);
-	*result -= other;
-	return *result;
+	IntMatrix result = IntMatrix(*this);
+	result -= other;
+	return result;
 }
 
 IntMatrix& IntMatrix::operator-=(const IntMatrix& other)
@@ -184,6 +183,11 @@ IntMatrix& IntMatrix::operator-=(const IntMatrix& other)
 
 ostream& operator<<(ostream& out, const IntMatrix& mat)
 {
+	assert(~((mat._rows == 0) ^ (mat._cols == 0))); // rows == cols == 0 OR rows, cols > 0
+	if (mat._rows == 0)
+	{
+		out << endl;
+	}
 	for (size_t i = 0; i < mat._rows; i++)
 	{
 		for (size_t j = 0; j < mat._cols - 1; j++)
@@ -197,15 +201,16 @@ ostream& operator<<(ostream& out, const IntMatrix& mat)
 
 istream& operator>>(istream& in, IntMatrix& mat)
 {
-	string numStr;
+	char* numStr = new char[mat._cols * 2];
 	for (size_t i = 0; i < mat._rows; i++)
 	{
-		getline(in, numStr, ',');
+		in.getline(numStr, mat._cols * 2, ',');
 		istringstream iss(numStr);
 		for (size_t j = 0; j < mat._cols; j++)
 		{
 			iss >> mat._data[i][j];
 		}
 	}
+	delete[] numStr;
 	return in;
 }

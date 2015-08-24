@@ -11,16 +11,17 @@ class IntMatrix
 {
 public:
 	IntMatrix(size_t rows, size_t cols);
+	IntMatrix(IntMatrix&& rvalue);
 	IntMatrix(const IntMatrix &toCopy);
 	IntMatrix();
 	~IntMatrix();
 	IntMatrix& operator=(IntMatrix other);
-	IntMatrix& operator+(const IntMatrix& other) const;
+	IntMatrix operator+(const IntMatrix& other) const;
 	IntMatrix& operator+=(const IntMatrix& other);
-	IntMatrix& operator*(const IntMatrix& other) const;
-	IntMatrix& operator*(int scalar) const;
+	IntMatrix operator*(const IntMatrix& other) const;
+	IntMatrix operator*(int scalar) const;
 	IntMatrix& operator*=(const IntMatrix& other);
-	IntMatrix& operator-(const IntMatrix& other) const;
+	IntMatrix operator-(const IntMatrix& other) const;
 	IntMatrix& operator-=(const IntMatrix& other);
 	friend ostream& operator<<(ostream& out, const IntMatrix& mat);
 	friend istream& operator>>(istream& in, IntMatrix& mat);

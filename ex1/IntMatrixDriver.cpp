@@ -2,8 +2,9 @@
 #define SEPARATOR ','
 #define MAT_SEP "--------"
 #define RESULT_SEP "=========="
+#define NUM_OF_OPS 5
 
-enum MatrixOp
+enum OpId
 {
 	ADD = 1,
 	SUB = 2,
@@ -18,27 +19,42 @@ enum Result
 	NUMBER = 1 
 };
 
-typedef struct
+struct MatrixOperation;
+
+typedef struct MatrixOperation
 {
-	MatrixOp _id;
+	OpId _id;
 	string _name;
 	Result _result;
-	void (*opHandler)(MatrixOperation);
+	void (*opHandler)(MatrixOperation& op);
 } MatrixOperation;
 
-IntMatrix& getMatrix()
+void printResult(Result resultType, void* result)
+{
+	switch (resultType)
+	{
+	case MATRIX:
+		cout << RESULT_SEP << endl << "Resulted Matrix:\n" << endl << *(IntMatrix*)result << endl;
+		break;
+	case NUMBER:
+		cout << "Matrix is square and its trace is: " << *(int*)result << endl;
+	}
+}
+
+IntMatrix getMatrix()
 {
 	size_t rows, cols;
 	cout << "number of rows:";
 	cin >> rows;
 	cout << "number of columns:";
 	cin >> cols;
-	cout << "Now insert the values of the matrix, row by row\n \
-		     After each cell add the char '" << SEPARATOR << "'\
-             (including after the last cell of a row).\n \
-			 Each row should be in a separate line." << endl;
-	IntMatrix* result = new IntMatrix(rows, cols);
-	return *result;
+	cout << "Now insert the values of the matrix, row by row\n"
+		 << "After each cell add the char '" << SEPARATOR << "'"
+         <<  "(including after the last cell of a row).\n"
+		 <<  "Each row should be in a separate line." << endl;
+	IntMatrix result = IntMatrix(rows, cols);
+	cin >> result;
+	return result;
 }
 
 void printMatrix(const string name, const IntMatrix& mat)
@@ -67,7 +83,7 @@ void twoOperandsOperation(MatrixOperation& op)
 		result = firstMat - secondMat;
 		break;
 	case MUL:
-		if (firstMat.getCols() == secondMat.getRows())
+		if (firstMat.canBeMultipliedBy(secondMat))
 		{
 			result = firstMat * secondMat;
 			break;
@@ -76,7 +92,8 @@ void twoOperandsOperation(MatrixOperation& op)
 		{
 
 		}
-		
+	default:
+		break;
 	}
 	printResult(MATRIX, &result);
 }
@@ -85,6 +102,7 @@ void oneOperandOperation(MatrixOperation& op)
 {
 	cout << "Operation " << op._name << " requires 1 operand matrix." << endl;
 	IntMatrix result;
+
 	switch (op._id)
 	{
 	case TRANS:
@@ -107,33 +125,22 @@ void oneOperandOperation(MatrixOperation& op)
 	}
 }
 
-void printResult(Result resultType, void* result)
-{
-	switch (resultType)
-	{
-	case MATRIX:
-		cout << RESULT_SEP << endl << "Resulted Matrix:\n" << endl << *(IntMatrix*)result << endl;
-		break;
-	case NUMBER:
-		cout << 
-	}
-}
-
 int main()
 {
 	MatrixOperation add = { ADD, "add", MATRIX, twoOperandsOperation },
-					mul = { MUL, "mul", MATRIX, twoOperandsOperation },
 					sub = { SUB, "sub", MATRIX, twoOperandsOperation },
+					mul = { MUL, "mul", MATRIX, twoOperandsOperation },
 					transpose = { TRANS, "trans", MATRIX,  oneOperandOperation },
 					trace = { TRACE, "trace", NUMBER, oneOperandOperation };
 	MatrixOperation ops[] = { add, sub, mul, transpose, trace };
 	int selectedOp;
 	cout << "Choose operation:" << endl;
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < NUM_OF_OPS; i++)
 	{
 		cout << ops[i]._id << ". " << ops[i]._name << endl;
 	}
 	cin >> selectedOp;
-	selectedOp--;
+	selectedOp--; // Turn Id to a valid index
 	ops[selectedOp].opHandler(ops[selectedOp]);
+	return 0;
 }

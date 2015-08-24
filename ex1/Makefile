@@ -10,7 +10,7 @@ IntMatrixMainDriver: IntMatrixDriver.o IntMatrix.o
 	${CC} ${C_FLAGS} IntMatrixDriver.o IntMatrix.o -o IntMatrixMainDriver
 
 IntMatrixDriver.o: IntMatrixDriver.cpp IntMatrix.h
-	${CC} ${C_FLAGS} -c IntMatrixDriver
+	${CC} ${C_FLAGS} -c IntMatrixDriver.cpp
 
 tar: ${TAR_FILES}
 	tar -cvf ${TAR_NAME} ${TAR_FILES}

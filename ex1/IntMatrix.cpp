@@ -1,10 +1,9 @@
 #include "IntMatrix.h"
 #include <assert.h>
-#include <sstream>
+
 
 #define DEFAULT_SIZE 0
 #define PRINT_SEPARATOR " "
-#define INPUT_SEPARATOR ','
 #define EMPTY_STRING ""
 
 void IntMatrix::swap(IntMatrix& toSwap)

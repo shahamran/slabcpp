@@ -1,8 +1,8 @@
 #include "IntMatrix.h"
-#define SEPARATOR ','
 #define MAT_SEP "--------"
 #define RESULT_SEP "=========="
 #define NUM_OF_OPS 5
+#define EMPTY_STRING ""
 
 enum OpId
 {
@@ -26,7 +26,7 @@ typedef struct MatrixOperation
 	OpId _id;
 	string _name;
 	Result _result;
-	void (*opHandler)(MatrixOperation& op);
+	string (*opHandler)(MatrixOperation& op);
 } MatrixOperation;
 
 void printResult(Result resultType, void* result)
@@ -49,7 +49,7 @@ IntMatrix getMatrix()
 	cout << "number of columns:";
 	cin >> cols;
 	cout << "Now insert the values of the matrix, row by row\n"
-		 << "After each cell add the char '" << SEPARATOR << "'"
+		 << "After each cell add the char '" << INPUT_SEPARATOR << "'"
          <<  "(including after the last cell of a row).\n"
 		 <<  "Each row should be in a separate line." << endl;
 	IntMatrix result = IntMatrix(rows, cols);
@@ -64,15 +64,16 @@ void printMatrix(const string name, const IntMatrix& mat)
 	cout << endl << mat << endl;
 }
 
-void twoOperandsOperation(MatrixOperation& op)
+string twoOperandsOperation(MatrixOperation& op)
 {
 	cout << "Operation " << op._name << " requires 2 operand matrices." << endl;
-	cout << "Insert first matrix:" << endl;
+	string firstName = "first ", secondName = "second ";
+	cout << "Insert " << firstName << "matrix:" << endl;
 	IntMatrix firstMat = getMatrix();
-	cout << "Insert second matrix:" << endl;
+	cout << "Insert " << secondName << "matrix:" << endl;
 	IntMatrix secondMat = getMatrix();
-	printMatrix("first ", firstMat);
-	printMatrix("second ", secondMat);
+	printMatrix(firstName, firstMat);
+	printMatrix(secondName, secondMat);
 	IntMatrix result;
 	switch (op._id)
 	{
@@ -90,15 +91,16 @@ void twoOperandsOperation(MatrixOperation& op)
 		}
 		else
 		{
-
+			return "different dimensions";
 		}
 	default:
 		break;
 	}
 	printResult(MATRIX, &result);
+	return EMPTY_STRING;
 }
 
-void oneOperandOperation(MatrixOperation& op)
+string oneOperandOperation(MatrixOperation& op)
 {
 	cout << "Operation " << op._name << " requires 1 operand matrix." << endl;
 	IntMatrix result;
@@ -106,11 +108,11 @@ void oneOperandOperation(MatrixOperation& op)
 	switch (op._id)
 	{
 	case TRANS:
-		result = getMatrix().trans();
-		printResult(MATRIX, (void*) &result);
+		printMatrix(EMPTY_STRING, result = getMatrix());
+		printResult(MATRIX, (void*) &result.trans());
 		break;
 	case TRACE:
-		result = getMatrix();
+		printMatrix(EMPTY_STRING, result = getMatrix());
 		if (result.isSquare())
 		{
 			int trace = result.trace();
@@ -119,12 +121,12 @@ void oneOperandOperation(MatrixOperation& op)
 		}
 		else
 		{
-
+			return "The matrix isn't square";
 		}
-		break;
 	default:
 		break;
 	}
+	return EMPTY_STRING;
 }
 
 int main()
@@ -143,6 +145,11 @@ int main()
 	}
 	cin >> selectedOp;
 	selectedOp--; // Turn Id to a valid index
-	ops[selectedOp].opHandler(ops[selectedOp]);
+	string errorStr = ops[selectedOp].opHandler(ops[selectedOp]);
+	if (errorStr != EMPTY_STRING)
+	{
+		cout << "Error: " << ops[selectedOp]._name << " failed - " << errorStr << "." << endl;
+		return 1;
+	}
 	return 0;
 }

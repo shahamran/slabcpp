@@ -4,6 +4,8 @@
 using namespace std;
 
 #include <iostream>
+#include <sstream>
+#define INPUT_SEPARATOR ','
 
 class IntMatrix
 {

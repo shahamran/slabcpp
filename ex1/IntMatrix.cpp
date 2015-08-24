@@ -1,11 +1,15 @@
 #include "IntMatrix.h"
 #include <assert.h>
-#define DEFAULT_SIZE 1
+#define DEFAULT_SIZE 0
 #define SEPARATOR " "
 #define EMPTY_STRING ""
 
 void IntMatrix::swap(IntMatrix& toSwap)
 {
+	std::swap(_data, toSwap._data);
+	std::swap(_rows, toSwap._rows);
+	std::swap(_cols, toSwap._cols);
+	/*
 	// Swap data
 	int** tmpData = _data;
 	_data = toSwap._data;
@@ -16,6 +20,7 @@ void IntMatrix::swap(IntMatrix& toSwap)
 	_cols = toSwap._cols;
 	toSwap._rows = tmpRows;
 	toSwap._cols = tmpCols;
+	*/
 	return;
 }
 
@@ -23,11 +28,26 @@ IntMatrix::IntMatrix(size_t rows, size_t cols)
 	: _rows(rows)
 	, _cols(cols)
 {
-	_data = new int*[rows];
-	for (size_t i = 0; i < rows; i++)
+	assert(rows > 0 && cols > 0 || rows == cols == 0);
+	if (rows == cols == 0)
 	{
-		_data[i] = new int[cols];
+		_data = nullptr;
 	}
+	else
+	{
+		_data = new int*[rows];
+		for (size_t i = 0; i < rows; i++)
+		{
+			_data[i] = new int[cols];
+		}
+	}
+}
+
+IntMatrix::IntMatrix(IntMatrix&& rvalue)
+	: IntMatrix()
+{
+	swap(rvalue);
+	return *this;
 }
 
 IntMatrix::IntMatrix(const IntMatrix& toCopy)
@@ -49,11 +69,14 @@ IntMatrix::IntMatrix()
 
 IntMatrix::~IntMatrix()
 {
-	for (size_t i = 0; i < this->_rows;  i++)
+	if (_data != nullptr)
 	{
-		delete[] _data[i];
+		for (size_t i = 0; i < this->_rows;  i++)
+		{
+			delete[] _data[i];
+		}
+		delete[] _data;
 	}
-	delete[] _data;
 }
 
 IntMatrix& IntMatrix::trans() const
@@ -72,6 +95,7 @@ IntMatrix& IntMatrix::trans() const
 int IntMatrix::trace() const
 {
 	int trace = 0;
+	assert (_rows == _cols);
 	// Assuming _rows == _cols
 	for (size_t i = 0; i < _rows; i++)
 	{
@@ -80,27 +104,11 @@ int IntMatrix::trace() const
 	return trace;	
 }
 
-IntMatrix& IntMatrix::operator=(const IntMatrix& other)
+IntMatrix& IntMatrix::operator=(IntMatrix other)
 {
-	// Check if dimensions agree. If so, copy data.
-	if (_rows == other._rows && _cols == other._cols)
-	{
-		for (size_t i = 0; i < _rows; i++)
-		{
-			for (size_t j = 0; j < _cols; j++)
-			{
-				_data[i][j] = other._data[i][j];
-			}
-		}
-	}
-	// If not, clone the other matrix and swap the clone with this.
-	else
-	{
-		IntMatrix tmp(other);
-		swap(tmp);
-	}
+	swap(other);
 	return *this;
-} // At this point, tmp (which now has old 'this' members) is being deleted and freed :)
+} // At this point, other is destroyed and *this lives carrying its values.
 
 IntMatrix& IntMatrix::operator+(const IntMatrix& other) const
 {
@@ -111,6 +119,7 @@ IntMatrix& IntMatrix::operator+(const IntMatrix& other) const
 
 IntMatrix& IntMatrix::operator+=(const IntMatrix& other)
 {
+	assert(_rows == other._rows && _cols == other._cols);
 	for (size_t i = 0; i < _rows; i++)
 	{
 		for (size_t j = 0; j < _cols; j++)
@@ -143,6 +152,7 @@ IntMatrix& IntMatrix::operator*(const IntMatrix& other) const
 
 IntMatrix& IntMatrix::operator*=(const IntMatrix& other)
 {
+	assert(_cols == other._rows);
 	IntMatrix tmp(this->_rows, other._cols);
 	for (size_t i = 0; i < tmp._rows; i++)
 	{

@@ -14,7 +14,7 @@ public:
 	IntMatrix(const IntMatrix &toCopy);
 	IntMatrix();
 	~IntMatrix();
-	IntMatrix& operator=(const IntMatrix& other);
+	IntMatrix& operator=(IntMatrix other);
 	IntMatrix& operator+(const IntMatrix& other) const;
 	IntMatrix& operator+=(const IntMatrix& other);
 	IntMatrix& operator*(const IntMatrix& other) const;

@@ -4,8 +4,6 @@
 using namespace std;
 
 #include <iostream>
-#include <string>
-#include <sstream>
 
 class IntMatrix
 {

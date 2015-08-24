@@ -1,7 +1,10 @@
 #include "IntMatrix.h"
 #include <assert.h>
+#include <sstream>
+
 #define DEFAULT_SIZE 0
-#define SEPARATOR " "
+#define PRINT_SEPARATOR " "
+#define INPUT_SEPARATOR ','
 #define EMPTY_STRING ""
 
 void IntMatrix::swap(IntMatrix& toSwap)
@@ -158,7 +161,7 @@ IntMatrix& IntMatrix::operator*=(const IntMatrix& other)
 		for (size_t j = 0; j < tmp._cols; j++)
 		{
 			tmp._data[i][j] = 0;
-			for (size_t k = 0; k < other._rows; j++)
+			for (size_t k = 0; k < other._rows; k++)
 			{
 				tmp._data[i][j] += this->_data[i][k] * other._data[k][j];
 			}
@@ -192,7 +195,7 @@ ostream& operator<<(ostream& out, const IntMatrix& mat)
 	{
 		for (size_t j = 0; j < mat._cols - 1; j++)
 		{
-			out << mat._data[i][j] << SEPARATOR;
+			out << mat._data[i][j] << PRINT_SEPARATOR;
 		}
 		out << mat._data[i][mat._cols - 1] << endl;
 	}
@@ -201,16 +204,18 @@ ostream& operator<<(ostream& out, const IntMatrix& mat)
 
 istream& operator>>(istream& in, IntMatrix& mat)
 {
-	char* numStr = new char[mat._cols * 2];
+	string numStr;
+	size_t a, b;
 	for (size_t i = 0; i < mat._rows; i++)
 	{
-		in.getline(numStr, mat._cols * 2, ',');
-		istringstream iss(numStr);
+		a = 0; b = 0;
+		in >> numStr;
 		for (size_t j = 0; j < mat._cols; j++)
 		{
-			iss >> mat._data[i][j];
+			b = numStr.find(INPUT_SEPARATOR, a);
+			istringstream(numStr.substr(a, b - a)) >> mat._data[i][j];
+			a = b + 1;
 		}
 	}
-	delete[] numStr;
 	return in;
 }

@@ -122,6 +122,8 @@ void oneOperandOperation(MatrixOperation& op)
 
 		}
 		break;
+	default:
+		break;
 	}
 }
 

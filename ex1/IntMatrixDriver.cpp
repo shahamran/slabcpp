@@ -123,7 +123,8 @@ string oneOperandOperation(MatrixOperation& op)
 	{
 	case TRANS:
 		printMatrix(EMPTY_STRING, result = getMatrix());
-		printResult(MATRIX, (void*) &result.trans());
+		result = result.trans();
+		printResult(MATRIX, (void*) &result);
 		break;
 	case TRACE:
 		printMatrix(EMPTY_STRING, result = getMatrix());

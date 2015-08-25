@@ -34,7 +34,7 @@ void printResult(Result resultType, void* result)
 	switch (resultType)
 	{
 	case MATRIX:
-		cout << RESULT_SEP << endl << "Resulted Matrix:\n" << endl << *(IntMatrix*)result << endl;
+		cout << RESULT_SEP << endl << "Resulted matrix:\n" << endl << *(IntMatrix*)result << endl;
 		break;
 	case NUMBER:
 		cout << "Matrix is square and its trace is: " << *(int*)result << endl;
@@ -48,8 +48,8 @@ IntMatrix getMatrix()
 	cin >> rows;
 	cout << "number of columns:";
 	cin >> cols;
-	cout << "Now insert the values of the matrix, row by row\n"
-		 << "After each cell add the char '" << INPUT_SEPARATOR << "'"
+	cout << "Now insert the values of the matrix, row by row.\n"
+		 << "After each cell add the char '" << INPUT_SEPARATOR << "' "
          <<  "(including after the last cell of a row).\n"
 		 <<  "Each row should be in a separate line." << endl;
 	IntMatrix result = IntMatrix(rows, cols);
@@ -129,26 +129,36 @@ string oneOperandOperation(MatrixOperation& op)
 	return EMPTY_STRING;
 }
 
-int main()
+MatrixOperation getOp()
 {
 	MatrixOperation add = { ADD, "add", MATRIX, twoOperandsOperation },
 					sub = { SUB, "sub", MATRIX, twoOperandsOperation },
 					mul = { MUL, "mul", MATRIX, twoOperandsOperation },
-					transpose = { TRANS, "trans", MATRIX,  oneOperandOperation },
-					trace = { TRACE, "trace", NUMBER, oneOperandOperation };
+					transpose = { TRANS, "trans", MATRIX, oneOperandOperation },
+					trace = { TRACE, "trace", NUMBER, oneOperandOperation },
+					selectedOp;
 	MatrixOperation ops[] = { add, sub, mul, transpose, trace };
-	int selectedOp;
-	cout << "Choose operation:" << endl;
-	for (int i = 0; i < NUM_OF_OPS; i++)
+	int selectedId;
+	do
 	{
-		cout << ops[i]._id << ". " << ops[i]._name << endl;
+		cout << "Choose operation:" << endl;
+		for (int i = 0; i < NUM_OF_OPS; i++)
+		{
+			cout << ops[i]._id << ". " << ops[i]._name << endl;
+		}
+		cin >> selectedId;
 	}
-	cin >> selectedOp;
-	selectedOp--; // Turn Id to a valid index
-	string errorStr = ops[selectedOp].opHandler(ops[selectedOp]);
+	while (selectedId < ADD || selectedId > TRACE);
+	return ops[selectedId - 1];
+}
+
+int main()
+{
+	MatrixOperation selectedOp = getOp();
+	string errorStr = selectedOp.opHandler(selectedOp);
 	if (errorStr != EMPTY_STRING)
 	{
-		cout << "Error: " << ops[selectedOp]._name << " failed - " << errorStr << "." << endl;
+		cout << "Error: " << selectedOp._name << " failed - " << errorStr << "." << endl;
 		return 1;
 	}
 	return 0;

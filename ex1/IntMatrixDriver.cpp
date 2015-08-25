@@ -57,10 +57,11 @@ IntMatrix getMatrix()
 	return inputMat;
 }
 
-void printMatrix(const string name, const IntMatrix& mat)
+void printMatrix(const IntMatrix& mat, const string name = EMPTY_STRING)
 {
+	string msg = name == EMPTY_STRING ? "got matrix:" : "Got " + name + "matrix:";
 	cout << MAT_SEP << endl;
-	cout << "Got " << name << "matrix:" << endl;
+	cout << msg << endl;
 	cout << endl << mat << endl;
 }
 
@@ -72,8 +73,8 @@ string twoOperandsOperation(MatrixOperation& op)
 	IntMatrix firstMat = getMatrix();
 	cout << "Insert " << secondName << "matrix:" << endl;
 	IntMatrix secondMat = getMatrix();
-	printMatrix(firstName, firstMat);
-	printMatrix(secondName, secondMat);
+	printMatrix(firstMat, firstName);
+	printMatrix(secondMat, secondName);
 	IntMatrix result;
 	switch (op._id)
 	{
@@ -122,12 +123,12 @@ string oneOperandOperation(MatrixOperation& op)
 	switch (op._id)
 	{
 	case TRANS:
-		printMatrix(EMPTY_STRING, result = getMatrix());
+		printMatrix(result = getMatrix());
 		result = result.trans();
 		printResult(MATRIX, (void*) &result);
 		break;
 	case TRACE:
-		printMatrix(EMPTY_STRING, result = getMatrix());
+		printMatrix(result = getMatrix());
 		if (result.isSquare())
 		{
 			int trace = result.trace();

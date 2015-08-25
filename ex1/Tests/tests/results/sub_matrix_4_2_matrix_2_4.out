@@ -1,0 +1,30 @@
+Choose operation:
+1. add
+2. sub
+3. mul
+4. trans
+5. trace
+Operation sub requires 2 operand matrices.
+Insert first matrix:
+number of rows:number of columns:Now insert the values of the matrix, row by row.
+After each cell add the char ',' (including after the last cell of a row).
+Each row should be in a separate line.
+Insert second matrix:
+number of rows:number of columns:Now insert the values of the matrix, row by row.
+After each cell add the char ',' (including after the last cell of a row).
+Each row should be in a separate line.
+--------
+Got first matrix:
+
+-1288333720 1579440877
+671539253 351592583
+-1915993055 -1620044304
+461489846 2133703340
+
+--------
+Got second matrix:
+
+1804417749 488370611 -627799469 -1309927709
+-427223922 209899815 -503593191 -1294601378
+
+Error: sub failed - different dimensions.

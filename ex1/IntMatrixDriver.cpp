@@ -19,17 +19,15 @@ enum Result
 	NUMBER = 1 
 };
 
-struct MatrixOperation;
-
 typedef struct MatrixOperation
 {
 	OpId _id;
 	string _name;
 	Result _result;
-	string (*opHandler)(MatrixOperation& op);
+	string (*_opHandler)(MatrixOperation& op);
 } MatrixOperation;
 
-void printResult(Result resultType, void* result)
+void printResult(Result resultType, void* result, string msg = "Matrix is square and its trace is: ")
 {
 	switch (resultType)
 	{
@@ -37,7 +35,8 @@ void printResult(Result resultType, void* result)
 		cout << RESULT_SEP << endl << "Resulted matrix:\n" << endl << *(IntMatrix*)result << endl;
 		break;
 	case NUMBER:
-		cout << "Matrix is square and its trace is: " << *(int*)result << endl;
+		cout << msg << *(int*)result << endl;
+		break;
 	}
 }
 
@@ -78,11 +77,25 @@ string twoOperandsOperation(MatrixOperation& op)
 	switch (op._id)
 	{
 	case ADD:
-		result = firstMat + secondMat;
-		break;
+		if (firstMat.canBeAddedBy(secondMat))
+		{
+			result = firstMat + secondMat;
+			break;
+		}
+		else
+		{
+			return "different dimensions";
+		}
 	case SUB:
-		result = firstMat - secondMat;
-		break;
+		if (firstMat.canBeAddedBy(secondMat))
+		{
+			result = firstMat - secondMat;
+			break;
+		}
+		else
+		{
+			return "different dimensions";
+		}
 	case MUL:
 		if (firstMat.canBeMultipliedBy(secondMat))
 		{
@@ -155,7 +168,7 @@ MatrixOperation getOp()
 int main()
 {
 	MatrixOperation selectedOp = getOp();
-	string errorStr = selectedOp.opHandler(selectedOp);
+	string errorStr = selectedOp._opHandler(selectedOp);
 	if (errorStr != EMPTY_STRING)
 	{
 		cout << "Error: " << selectedOp._name << " failed - " << errorStr << "." << endl;

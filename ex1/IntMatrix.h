@@ -28,6 +28,11 @@ public:
 	IntMatrix& trans() const;
 	int trace() const;
 
+	bool canBeAddedBy(const IntMatrix& other) const
+	{
+		return (_cols == other._cols && _rows == other._rows);
+	}
+
 	bool canBeMultipliedBy(const IntMatrix& other) const
 	{
 		return (_cols == other._rows);

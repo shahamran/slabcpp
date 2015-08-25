@@ -90,7 +90,7 @@ public:
 
 	friend istream& operator>>(istream& in, IntMatrix& mat);
 
-	IntMatrix& trans() const;
+	IntMatrix trans() const;
 
 	int trace() const;
 

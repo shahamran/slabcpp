@@ -80,17 +80,17 @@ IntMatrix::~IntMatrix()
 	}
 }
 
-IntMatrix& IntMatrix::trans() const
+IntMatrix IntMatrix::trans() const
 {
-	IntMatrix* result = new IntMatrix(_cols, _rows);
+	IntMatrix result = IntMatrix(_cols, _rows);
 	for (size_t i = 0; i < _rows; i++)
 	{
 		for (size_t j = 0; j < _cols; j++)
 		{
-			result->_data[j][i] = this->_data[i][j];
+			result._data[j][i] = this->_data[i][j];
 		}
 	}
-	return *result;
+	return result;
 }
 
 int IntMatrix::trace() const

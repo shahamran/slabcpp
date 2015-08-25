@@ -2,6 +2,14 @@ CC = g++
 C_FLAGS = -std=c++11 -Wall -Wextra
 TAR_NAME = ex1.tar
 TAR_FILES = IntMatrix.h IntMatrix.cpp IntMatrixDriver.cpp Makefile
+VALGRIND_FLAGS = --leak-check=full --show-possibly-lost=yes --show-reachable=yes --undef-value-errors=yes
+
+ValgrindTest: IntMatrix.h IntMatrix.cpp IntMatrixDriver.cpp
+	make clean
+	${CC} ${C_FLAGS} -c -g IntMatrix.cpp
+	${CC} ${C_FLAGS} -c -g IntMatrixDriver.cpp
+	${CC} ${C_FLAGS} -g IntMatrixDriver.o IntMatrix.o -o IntMatrixMainDriver
+	valgrind ${VALGRIND_FLAGS} ./IntMatrixMainDriver
 
 all: IntMatrix IntMatrixMainDriver tar
 	echo all
@@ -24,4 +32,4 @@ IntMatrix.o: IntMatrix.h IntMatrix.cpp
 clean:
 	rm -fv *.o IntMatrixMainDriver *.exe*
 
-.PHONY: clean all IntMatrix tar
+.PHONY: clean all IntMatrix tar ValgrindTest

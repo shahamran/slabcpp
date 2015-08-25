@@ -27,7 +27,8 @@ typedef struct MatrixOperation
 	string (*_opHandler)(MatrixOperation& op);
 } MatrixOperation;
 
-void printResult(Result resultType, void* result, string msg = "Matrix is square and its trace is: ")
+void printResult(Result resultType, void* result, 
+				 string msg = "Matrix is square and its trace is: ")
 {
 	switch (resultType)
 	{
@@ -51,9 +52,9 @@ IntMatrix getMatrix()
 		 << "After each cell add the char '" << INPUT_SEPARATOR << "' "
          <<  "(including after the last cell of a row).\n"
 		 <<  "Each row should be in a separate line." << endl;
-	IntMatrix result = IntMatrix(rows, cols);
-	cin >> result;
-	return result;
+	IntMatrix inputMat = IntMatrix(rows, cols);
+	cin >> inputMat;
+	return inputMat;
 }
 
 void printMatrix(const string name, const IntMatrix& mat)

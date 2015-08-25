@@ -28,7 +28,7 @@ typedef struct MatrixOperation
 } MatrixOperation;
 
 void printResult(Result resultType, void* result, 
-				 string msg = "The matrix is square and its trace is: ")
+				 string msg = "The matrix is square and its trace is ")
 {
 	switch (resultType)
 	{

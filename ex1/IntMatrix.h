@@ -70,14 +70,45 @@ public:
 	 */
 	~IntMatrix();
 
+	/**
+	 * The assignment operator. This IntMatrix will have the same values as the copied one.
+	 * 
+	 * @param other The IntMatrix to copy.
+	 */
 	IntMatrix& operator=(IntMatrix other);
 
+	/**
+	 * Calculates the addition of another matrix to this one.
+	 * Only call with a matrix that has the same dimensions as this one.
+	 * 
+	 * @param other A matrix with the same dimensions as this one to add.
+	 * @return An IntMatrix which is the result of the addition.
+	 */
 	IntMatrix operator+(const IntMatrix& other) const;
 
+	/**
+	 * Adds a matrix to this one.
+	 * Only call with another matrix with the same dimensions.
+	 * 
+	 * @param other Another IntMatrix with the same dimensions.
+	 */
 	IntMatrix& operator+=(const IntMatrix& other);
 
+	/**
+	 * Calculates the multiplication of this matrix by another one.
+	 * Only call with a matrix that satisfy (this->_cols == other._rows).
+	 * 
+	 * @param other Another matrix with the right dimensions (see above).
+	 * @return The matrix multiplication result.
+	 */
 	IntMatrix operator*(const IntMatrix& other) const;
 
+	/**
+	 * Calculates the multiplication of this matrix by a scalar (integer).
+	 * 
+	 * @param scalar A scalar to
+	 * @return [description]
+	 */
 	IntMatrix operator*(int scalar) const;
 
 	IntMatrix& operator*=(const IntMatrix& other);

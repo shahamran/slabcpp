@@ -49,7 +49,7 @@ public:
 	 * 
 	 * @param rvalue An rvalue IntMatrix object.
 	 */
-	IntMatrix(IntMatrix&& rvalue);
+	IntMatrix(IntMatrix && rvalue);
 
 	/**
 	 * A deep-copy constructor that creates a new independent data array which is a copy of
@@ -218,13 +218,14 @@ public:
 		return (_cols);
 	}
 
-private:
 	/**
-	 * A swap function that replaces this matrix's internal members with the other matrix.
-	 * 
-	 * @param toSwap The matrix to be swapped with.
-	 */
+	* A swap function that replaces this matrix's internal members with the other matrix.
+	*
+	* @param toSwap The matrix to be swapped with.
+	*/
 	void swap(IntMatrix& toSwap);
+
+private:
 	size_t _rows, _cols;
 	// The dynamic 2d array that keeps the data for this matrix.
 	int** _data;

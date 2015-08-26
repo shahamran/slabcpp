@@ -53,12 +53,12 @@ void printResult(Result resultType, void* result,
 {
 	switch (resultType)
 	{
-	case MATRIX:
-		cout << RESULT_SEP << endl << "Resulted matrix:\n" << endl << *(IntMatrix*)result << endl;
-		break;
-	case NUMBER:
-		cout << msg << *(int*)result << endl;
-		break;
+		case MATRIX:
+			cout << RESULT_SEP << endl << "Resulted matrix:\n" << endl << *(IntMatrix*)result << endl;
+			break;
+		case NUMBER:
+			cout << msg << *(int*)result << endl;
+			break;
 	}
 }
 
@@ -119,38 +119,38 @@ string twoOperandsOperation(MatrixOperation& op)
 	IntMatrix result;
 	switch (op._id)
 	{
-	case ADD:
-		if (firstMat.canBeAddedBy(secondMat))
-		{
-			result = firstMat + secondMat;
+		case ADD:
+			if (firstMat.canBeAddedBy(secondMat))
+			{
+				result = firstMat + secondMat;
+				break;
+			}
+			else
+			{
+				return "different dimensions";
+			}
+		case SUB:
+			if (firstMat.canBeAddedBy(secondMat))
+			{
+				result = firstMat - secondMat;
+				break;
+			}
+			else
+			{
+				return "different dimensions";
+			}
+		case MUL:
+			if (firstMat.canBeMultipliedBy(secondMat))
+			{
+				result = firstMat * secondMat;
+				break;
+			}
+			else
+			{
+				return "different dimensions";
+			}
+		default:
 			break;
-		}
-		else
-		{
-			return "different dimensions";
-		}
-	case SUB:
-		if (firstMat.canBeAddedBy(secondMat))
-		{
-			result = firstMat - secondMat;
-			break;
-		}
-		else
-		{
-			return "different dimensions";
-		}
-	case MUL:
-		if (firstMat.canBeMultipliedBy(secondMat))
-		{
-			result = firstMat * secondMat;
-			break;
-		}
-		else
-		{
-			return "different dimensions";
-		}
-	default:
-		break;
 	}
 	// Print result
 	printResult(MATRIX, &result);
@@ -170,25 +170,25 @@ string oneOperandOperation(MatrixOperation& op)
 
 	switch (op._id)
 	{
-	case TRANS:
-		printMatrix(result = getMatrix());
-		result = result.trans();
-		printResult(MATRIX, (void*) &result);
-		break;
-	case TRACE:
-		printMatrix(result = getMatrix());
-		if (result.isSquare())
-		{
-			int trace = result.trace();
-			printResult(NUMBER, (void*)&trace);
+		case TRANS:
+			printMatrix(result = getMatrix());
+			result = result.trans();
+			printResult(MATRIX, (void*) &result);
 			break;
-		}
-		else
-		{
-			return "The matrix isn't square";
-		}
-	default:
-		break;
+		case TRACE:
+			printMatrix(result = getMatrix());
+			if (result.isSquare())
+			{
+				int trace = result.trace();
+				printResult(NUMBER, (void*)&trace);
+				break;
+			}
+			else
+			{
+				return "The matrix isn't square";
+			}
+		default:
+			break;
 	}
 	return EMPTY_STRING;
 }

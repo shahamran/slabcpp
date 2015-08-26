@@ -51,7 +51,7 @@ IntMatrix::IntMatrix(size_t rows, size_t cols)
 *
 * @param rvalue An rvalue IntMatrix object.
 */
-IntMatrix::IntMatrix(IntMatrix&& rvalue)
+IntMatrix::IntMatrix(IntMatrix && rvalue)
 	: IntMatrix()
 {
 	swap(rvalue);

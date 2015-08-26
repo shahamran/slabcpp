@@ -95,7 +95,7 @@ public:
 	IntMatrix& operator+=(const IntMatrix& other);
 
 	/**
-	 * Calculates the multiplication of this matrix by another one.
+	 * Calculates the product of multiplication of this matrix by another one.
 	 * Only call with a matrix that satisfy (this->_cols == other._rows).
 	 * 
 	 * @param other Another matrix with the right dimensions (see above).
@@ -106,23 +106,69 @@ public:
 	/**
 	 * Calculates the multiplication of this matrix by a scalar (integer).
 	 * 
-	 * @param scalar A scalar to
-	 * @return [description]
+	 * @param scalar The scalar by which the matrix will be multiplied
+	 * @return The result of the multiplication by scalar.
 	 */
 	IntMatrix operator*(int scalar) const;
 
+	/**
+	 * Multiplies this matrix by another.
+	 * 
+	 * @param other The matrix by which this matrix will be multiplied
+	 */
 	IntMatrix& operator*=(const IntMatrix& other);
 
+	/**
+	 * Calculates the subtraction of another matrix from this one.
+	 * Only call with a matrix that has the same dimensions as this one.
+	 * 
+	 * @param other A matrix with the same dimensions as this one to subtact.
+	 * @return An IntMatrix which is the result of the subtraction.
+	 */
 	IntMatrix operator-(const IntMatrix& other) const;
 
+	/**
+	 * Subtracts a matrix from this one.
+	 * Only call with another matrix with the same dimensions.
+	 * 
+	 * @param other Another IntMatrix with the same dimensions.
+	 */
 	IntMatrix& operator-=(const IntMatrix& other);
 
+	/**
+	 * 'Prints' this matrix to a given out-stream.
+	 * Writing is done in the following format:
+	 * Each matrix entry is followed by a space character except the last one in the line.
+	 * Every two lines are separated by a single newline ('\n') char.
+	 * 
+	 * @param out An output stream object
+	 * @param mat The IntMatrix object reference.
+	 */
 	friend ostream& operator<<(ostream& out, const IntMatrix& mat);
 
+	/**
+	 * Gets a given matrix's values from a given input-stream.
+	 * The input is done in the following format:
+	 * Each line in the input is a line of matrix entries.
+	 * Every entry is followed by a single comma (',') character.
+	 * Make sure the number of rows and columns in the input match the given matrix's dimensions.
+	 * 
+	 * @param in The input-stream
+	 * @param mat The matrix to assign.
+	 */
 	friend istream& operator>>(istream& in, IntMatrix& mat);
 
+	/**
+	 * @return The transpose of this matrix.
+	 */
 	IntMatrix trans() const;
 
+	/**
+	 * Make sure this matrix is square before using this function.
+	 * The check can be done by the isSquare() function.
+	 * 
+	 * @return The trace of this matrix.
+	 */
 	int trace() const;
 
 	/**
@@ -155,6 +201,23 @@ public:
 	{
 		return (_rows == _cols);
 	}
+
+	/**
+	 * @return Returns the number of rows of this matrix.
+	 */
+	size_t getRows() const
+	{
+		return (_rows);
+	}
+
+	/**
+	 * @return The number of columnts of this matrix.
+	 */
+	size_t getCols() const
+	{
+		return (_cols);
+	}
+
 private:
 	/**
 	 * A swap function that replaces this matrix's internal members with the other matrix.

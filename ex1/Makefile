@@ -4,14 +4,14 @@ TAR_NAME = ex1.tar
 TAR_FILES = IntMatrix.h IntMatrix.cpp IntMatrixDriver.cpp Makefile
 VALGRIND_FLAGS = --leak-check=full --show-possibly-lost=yes --show-reachable=yes --undef-value-errors=yes
 
+IntMatrixMainDriver: IntMatrixDriver.o IntMatrix.o
+	${CC} ${C_FLAGS} IntMatrixDriver.o IntMatrix.o -o IntMatrixMainDriver
+
 ValgrindTest: IntMatrixMainDriver
 	valgrind ${VALGRIND_FLAGS} ./IntMatrixMainDriver
 
 all: IntMatrix IntMatrixMainDriver tar
 	echo all
-
-IntMatrixMainDriver: IntMatrixDriver.o IntMatrix.o
-	${CC} ${C_FLAGS} IntMatrixDriver.o IntMatrix.o -o IntMatrixMainDriver
 
 IntMatrixDriver.o: IntMatrixDriver.cpp IntMatrix.h
 	${CC} ${C_FLAGS} -c IntMatrixDriver.cpp

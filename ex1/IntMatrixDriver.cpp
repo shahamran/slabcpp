@@ -1,9 +1,15 @@
 #include "IntMatrix.h"
+
 #define MAT_SEP "--------"
 #define RESULT_SEP "=========="
 #define NUM_OF_OPS 5
 #define EMPTY_STRING ""
+#define EXIT_FAILURE 1
+#define EXIT_SUCCESS 0
 
+/**
+ * Enum for the operations numbers
+ */
 enum OpId
 {
 	ADD = 1,
@@ -13,12 +19,19 @@ enum OpId
 	TRACE = 5
 };
 
+/**
+ * Enum for the result type (in case we add more operations)
+ */
 enum Result
 { 
 	MATRIX = 0,
 	NUMBER = 1 
 };
 
+/**
+ * A struct that represents a matrix operation.
+ * Holds a name, the result type and a function.
+ */
 typedef struct MatrixOperation
 {
 	OpId _id;
@@ -27,6 +40,14 @@ typedef struct MatrixOperation
 	string (*_opHandler)(MatrixOperation& op);
 } MatrixOperation;
 
+/**
+ * Prints the given result. Can accept a number or a matrix pointer.
+ * 
+ * @param  resultType The result type.
+ * @param result A pointer to the result (IntMatrix* or int*)
+ * @param msg In case the result is a number, specify what message will be displayed.
+ * 			  Default is trace message.
+ */
 void printResult(Result resultType, void* result, 
 				 string msg = "The matrix is square and its trace is ")
 {
@@ -41,6 +62,10 @@ void printResult(Result resultType, void* result,
 	}
 }
 
+/**
+ * Asks the user for matrix input.
+ * @return The IntMatrix object as specified in the user input.
+ */
 IntMatrix getMatrix()
 {
 	size_t rows, cols;
@@ -57,6 +82,11 @@ IntMatrix getMatrix()
 	return inputMat;
 }
 
+/**
+ * Prints the given matrix.
+ * @param mat The matrix to print.
+ * @param name The name of the matrix. Default name is "" (no name).
+ */
 void printMatrix(const IntMatrix& mat, const string name = EMPTY_STRING)
 {
 	string msg = name == EMPTY_STRING ? "got matrix:" : "Got " + name + "matrix:";
@@ -65,16 +95,27 @@ void printMatrix(const IntMatrix& mat, const string name = EMPTY_STRING)
 	cout << endl << mat << endl;
 }
 
+/**
+ * Gets two matrices from the user and runs the given operation, only if the operation
+ * can be performed. Then prints the result. 
+ * If the operation could be done, returns an error (string) message.
+ * 
+ * @param op The matrix operation
+ * @return An error message if the operation could not be performed, "" (empty string) otherwise.
+ */
 string twoOperandsOperation(MatrixOperation& op)
 {
 	cout << "Operation " << op._name << " requires 2 operand matrices." << endl;
+	// Gets two matrices.
 	string firstName = "first ", secondName = "second ";
 	cout << "Insert " << firstName << "matrix:" << endl;
 	IntMatrix firstMat = getMatrix();
 	cout << "Insert " << secondName << "matrix:" << endl;
 	IntMatrix secondMat = getMatrix();
+	// Print matrices.
 	printMatrix(firstMat, firstName);
 	printMatrix(secondMat, secondName);
+	// Perform operation
 	IntMatrix result;
 	switch (op._id)
 	{
@@ -111,10 +152,17 @@ string twoOperandsOperation(MatrixOperation& op)
 	default:
 		break;
 	}
+	// Print result
 	printResult(MATRIX, &result);
 	return EMPTY_STRING;
 }
 
+/**
+ * Gets a matrix from the user and performs the given operation. Then prints the result.
+ * @param op The matrix operation
+ * @return An error string message if the operation couldn't be done, EMPTY_STRING if the
+ * operation was performed.
+ */
 string oneOperandOperation(MatrixOperation& op)
 {
 	cout << "Operation " << op._name << " requires 1 operand matrix." << endl;
@@ -145,6 +193,9 @@ string oneOperandOperation(MatrixOperation& op)
 	return EMPTY_STRING;
 }
 
+/**
+ * Gets the desired operation from the user.
+ */
 MatrixOperation getOp()
 {
 	MatrixOperation add = { ADD, "add", MATRIX, twoOperandsOperation },
@@ -168,14 +219,17 @@ MatrixOperation getOp()
 	return ops[selectedId - 1];
 }
 
+/**
+ * The main function that runs when program is being run
+ */
 int main()
 {
 	MatrixOperation selectedOp = getOp();
 	string errorStr = selectedOp._opHandler(selectedOp);
 	if (errorStr != EMPTY_STRING)
-	{
+	{  // If operation failed, print the error message.
 		cout << "Error: " << selectedOp._name << " failed - " << errorStr << "." << endl;
-		return 1;
+		return EXIT_FAILURE;
 	}
-	return 0;
+	return EXIT_SUCCESS;
 }

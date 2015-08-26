@@ -1,9 +1,11 @@
 CC = g++
+# -g flag for valgrind debugging
 C_FLAGS = -std=c++11 -Wall -Wextra -g
 TAR_NAME = ex1.tar
 TAR_FILES = IntMatrix.h IntMatrix.cpp IntMatrixDriver.cpp Makefile
 VALGRIND_FLAGS = --leak-check=full --show-possibly-lost=yes --show-reachable=yes --undef-value-errors=yes
 
+# This will be created when calling make with no arguments!
 IntMatrixMainDriver: IntMatrixDriver.o IntMatrix.o
 	${CC} ${C_FLAGS} IntMatrixDriver.o IntMatrix.o -o IntMatrixMainDriver
 

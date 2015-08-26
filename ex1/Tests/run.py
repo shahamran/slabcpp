@@ -1,6 +1,6 @@
 import os
 
-EX = 'IntMatrixMainDriver'
+EX = './IntMatrixMainDriver'
 CASES = "tests/cases_lite"
 failed = 0
 

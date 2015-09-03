@@ -6,10 +6,11 @@
 class InstrumentalSong : public Song
 {
 public:
-	InstrumentalSong(std::string title, std::string tags, std::string instruments,
-					 std::string performer, double bpm = NO_BPM);
+	InstrumentalSong(const std::string& title, const std::string& tags,
+					 const std::string& instruments, const std::string& performer,
+					 double bpm = NO_BPM);
 	virtual ~InstrumentalSong();
-	bool hasInstrument(std::string instrument) const;
+	bool hasInstrument(const std::string& instrument) const;
 	std::string getDetails() const override;
 };
 

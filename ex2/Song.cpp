@@ -3,8 +3,8 @@
 
 #define NO_TAG 0
 
-Song::Song(std::string title, std::string tagsStr, std::string data, 
-		   std::string author, double bpm = NO_BPM) :
+Song::Song(const std::string& title, const std::string& tagsStr, const std::string& data,
+		   const std::string& author, double bpm = NO_BPM) :
 	_title(title), _author(author), _bpm(bpm), _tags(), _data()
 {
 	std::istringstream iss(tagsStr);
@@ -35,7 +35,7 @@ Song::~Song()
 {
 }
 
-int Song::hasTag(std::string tag) const
+int Song::hasTag(const std::string& tag) const
 {
 	std::unordered_map<std::string, int>::const_iterator foundTag = _tags.find(tag);
 	if (foundTag == _tags.end)

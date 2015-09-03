@@ -146,6 +146,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\InstrumentalSong.h" />
+    <ClInclude Include="..\Song.h" />
+    <ClInclude Include="..\SortHelper.h" />
+    <ClInclude Include="..\VocalSong.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\InstrumentalSong.cpp" />
+    <ClCompile Include="..\MIR.cpp" />
+    <ClCompile Include="..\ReadingSongsTemplate.cpp" />
+    <ClCompile Include="..\Song.cpp" />
+    <ClCompile Include="..\SortHelper.cpp" />
+    <ClCompile Include="..\VocalSong.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,8 +1,21 @@
 #include <iostream>
+#include <string>
+#include <unordered_map>
 
 #define NUM_OF_ARGS 4
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
+
+typedef std::unordered_map<std::string, std::pair<double, double>> BpmWordsMap;
+
+struct Parameters
+{
+	int tagMatchScore;
+	int lyricsMatchScore;
+	int instrumentMatchScore;
+	int bpmLikelihoodWeight;
+	BpmWordsMap bpmWords;
+};
 
 enum Argument
 {
@@ -11,6 +24,11 @@ enum Argument
 	PARAMS_FILE = 2,
 	QUERIES_FILE = 3
 };
+
+std::string getWordList(const std::string line)
+{
+
+}
 
 int main(int argc, char* argv[])
 {

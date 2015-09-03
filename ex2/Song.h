@@ -15,8 +15,8 @@ public:
 	 * @param title The song's title
 	 * @param tagsStr A list of tags and their weight separated by spaces - <tag> <weight> ...
 	 */
-	Song(std::string title, std::string tagsStr, std::string data, \
-		 std::string author, double bpm = 0.0);
+	Song(const std::string& title, const std::string& tagsStr, const std::string& data,
+		 const std::string& author, double bpm = NO_BPM);
 
 	/**
 	 * Virtual destructor for a song object;
@@ -42,9 +42,9 @@ public:
 	 * @param tag The string of a tag to check.
 	 * @return The weight of the given tag if this songs contains it, 0 otherwise.
 	 */
-	int hasTag(std::string tag) const;
+	int hasTag(const std::string& tag) const;
 
-	inline virtual double getBpm() const
+	inline double getBpm() const
 	{
 		return _bpm;
 	}

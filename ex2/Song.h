@@ -31,6 +31,10 @@ public:
 		return _title;
 	};
 
+	virtual int containsWord(const std::string& word) const = 0;
+
+	virtual bool hasInstrument(const std::string& instrument) const = 0;
+
 	/**
 	 * Pure virtual method for retrieving the song's details.
 	 */
@@ -54,9 +58,11 @@ public:
 	static Song * createSong(std::string title,std::string tags, std::string data,
 							  std::string author, double bpm = NO_BPM);
 protected:
+	typedef std::unordered_map<std::string, int> TagsList;
+	typedef std::unordered_multiset<std::string> DataList;
 	std::string _title;
-	std::unordered_map<std::string, int> _tags;
-	std::unordered_multiset<std::string> _data;
+	TagsList _tags;
+	DataList _data;
 	std::string _author;
 	double _bpm;
 };

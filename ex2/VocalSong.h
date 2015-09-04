@@ -8,7 +8,8 @@ public:
 	VocalSong(const std::string& title, const std::string& tags, 
 			  const std::string& lyrics, const std::string& author);
 	virtual ~VocalSong();
-	int containsWord(const std::string& word) const;
+	int containsWord(const std::string& word) const override;
+	bool hasInstrument(const std::string& instrument) const override;
 	std::string getDetails() const override;
 };
 

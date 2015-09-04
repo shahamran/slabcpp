@@ -1,21 +1,17 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include "Song.h"
+#include "Parser.h"
 
 #define NUM_OF_ARGS 4
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
+#define SEPARATOR "----------------------------------------"
+#define TAB '\t'
+#define MINIMAL_SCORE 0
 
-typedef std::unordered_map<std::string, std::pair<double, double>> BpmWordsMap;
 
-struct Parameters
-{
-	int tagMatchScore;
-	int lyricsMatchScore;
-	int instrumentMatchScore;
-	int bpmLikelihoodWeight;
-	BpmWordsMap bpmWords;
-};
 
 enum Argument
 {
@@ -25,9 +21,43 @@ enum Argument
 	QUERIES_FILE = 3
 };
 
-std::string getWordList(const std::string line)
+void updateSongsRating(Parser::SongsList& output, const Parser::SongsList& songs, 
+					   const Parser::Parameters& params, const std::string& query)
 {
+	int rating = 0;
+	Parser::BpmWordsMap::const_iterator foundBpmWord;
+	double m, s, bpm, bpmLikelihood;
+	
+	for (Parser::SongsList::iterator curr = songs.begin; curr != songs.end; curr++)
+	{
+		rating = 0;
+		rating += (curr->second->hasTag(query)) * params._tagMatchScore;
+		rating += (curr->second->containsWord(query)) * params._lyricsMatchScore;
+		rating += (curr->second->hasInstrument(query)) * params._instrumentMatchScore;
+		foundBpmWord = params._bpmWords.find(query);
+		if (foundBpmWord != params._bpmWords.end)
+		{
+			bpm = curr->second->getBpm;
+			if (bpm != NO_BPM)
+			{
+				m = foundBpmWord->second.first;
+				s = foundBpmWord->second.second;
+				bpmLikelihood = floor(exp(-pow(bpm - m, 2) / (2 * pow(s, 2)))); // -----------------
+				rating += (int)bpmLikelihood * params._bpmLikelihoodWeight;
+			}
+		}
+		output.insert(std::make_pair(rating, curr->second));
+	}
+}
 
+void printResult(const std::string& query, const std::pair<int, Song*>& result)
+{
+	const int rating = result.first;
+	const Song* song = result.second;
+	if (rating <= MINIMAL_SCORE)
+		return;
+	std::cout << SEPARATOR << std::endl << query << std::endl << std::endl;
+	std::cout << song->getTitle() << TAB << rating << TAB << song->getDetails() << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -42,5 +72,19 @@ int main(int argc, char* argv[])
 				paramsFileName(argv[PARAMS_FILE]),
 				queriesFileName(argv[QUERIES_FILE]);
 
+	Parser::Parameters prms;
+	Parser::SongsList songsList, sortedList;
+	Parser::StringVector queries;
+	Parser::parse<Parser::Parameters>(prms, paramsFileName);
+	Parser::parse<Parser::SongsList>(songsList, dataFileName);
+	Parser::parse<Parser::StringVector>(queries, queriesFileName);
+	for (Parser::StringVector::iterator curr = queries.begin; curr != queries.end; curr++)
+	{
+		updateSongsRating(sortedList, songsList, prms, *curr);
+		for (Parser::SongsList::iterator i_song = sortedList.begin; i_song != sortedList.end; i_song++)
+		{
+			printResult(*curr, *i_song);
+		}
+	}
 	return EXIT_SUCCESS;
 }

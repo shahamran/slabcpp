@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\InstrumentalSong.h" />
+    <ClInclude Include="..\Parser.h" />
     <ClInclude Include="..\Song.h" />
     <ClInclude Include="..\SortHelper.h" />
     <ClInclude Include="..\VocalSong.h" />
@@ -154,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="..\InstrumentalSong.cpp" />
     <ClCompile Include="..\MIR.cpp" />
+    <ClCompile Include="..\Parser.cpp" />
     <ClCompile Include="..\ReadingSongsTemplate.cpp" />
     <ClCompile Include="..\Song.cpp" />
     <ClCompile Include="..\SortHelper.cpp" />

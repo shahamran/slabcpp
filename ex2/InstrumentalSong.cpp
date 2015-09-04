@@ -11,12 +11,17 @@ InstrumentalSong::~InstrumentalSong()
 {
 }
 
+inline int InstrumentalSong::containsWord(const std::string& word) const
+{
+	return 0;
+}
+
 inline bool InstrumentalSong::hasInstrument(const std::string& instrument) const
 {
 	return _data.count(instrument);
 }
 
-std::string InstrumentalSong::getDetails() const
+inline std::string InstrumentalSong::getDetails() const
 {
 	return "performed by: " + _author;
 }

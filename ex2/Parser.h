@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <map> // for multimap
 #include <vector>
+#include <fstream> // for files handling
 #include <functional> // For the greater<int> functor
 #include "VocalSong.h"
 #include "InstrumentalSong.h"
@@ -17,13 +18,11 @@ public:
 	 * SortedSongsList: A multimap<int, Song*> of songs and their ratings.
 	 * BpmWord: A pair that contains the bpm word, 'm' and 's' values.
 	 * BpmWordsMap: A map of the bpm words for fast retrieval.
-	 * StringVector: A vector of strings.
 	 */
 	typedef std::vector<Song*> SongsList;
 	typedef std::multimap<int, Song*, std::greater<int>> SortedSongsList;
 	typedef std::pair<std::string, std::pair<double, double>> BpmWord;
 	typedef std::unordered_map<std::string, std::pair<double, double>> BpmWordsMap;
-	typedef std::vector<std::string> StringVector;
 
 	/**
 	 * A struct that contains all the relevant parameters for songs rating.
@@ -55,19 +54,13 @@ public:
 
 	/**
 	 * Parses a songs file to initialize a given songs list (vector).
+	 * Important note: this method ALLOCATES memory on the heap. 
+	 * Use 'delete' on all (Song*) in SongsList.
 	 * @param songs A vector of (Song*)
 	 * @param fileName The songs file name
 	 * @return a reference to the songs parameter
 	 */
 	static SongsList& parseSongs(SongsList& songs, const std::string& fileName);
-
-	/**
-	 * Parses a queries file to initialize a given String vector.
-	 * @param queries The vector of std::string
-	 * @param fileName The queries file to parse.
-	 * @return a reference to the queries parameter.
-	 */
-	static StringVector& parseQueries(StringVector& queries, const std::string fileName);
 
 private:
 	/**

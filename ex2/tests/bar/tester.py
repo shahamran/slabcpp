@@ -6,7 +6,7 @@ if not os.path.isdir("results_out"):
     os.system("mkdir results_out")
 if not os.path.isdir("diff"):
     os.system("mkdir diff")
-
+'''
 # deleting MIR and recreating it
 if not os.path.exists("Makefile") or os.path.exists("makefile"):
     print("No make file found!\nexiting...")
@@ -15,7 +15,7 @@ elif os.path.exists("MIR"):
     os.system("rm -f MIR")
 
 os.system("make")
-
+'''
 if not os.path.exists("MIR"):
     print("couldn't make MIR file!\nexiting...")
     exit()
@@ -45,6 +45,9 @@ for i in range(1, 4):
 if (failed != 0):
     print("------ RESULTS -------\nFailed: {}\n Passed: {}\n".format(failed, succeeded))
 else:
+    print("Passed all tests\n")
+'''
+else:
     print(
         "-------------------\nPassed all tests!\n -----------------------------\nrunning coding style check...\n\n")
     time.sleep(3)
@@ -55,3 +58,4 @@ else:
     print("\n\n---------------------\nRunning presubmit...")
     time.sleep(3)
     os.system("~slabcpp/www/ex2/presubmit_ex2 ex2.tar")
+'''

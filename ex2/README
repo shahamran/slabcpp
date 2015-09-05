@@ -1,0 +1,41 @@
+About my design:
+
+__Modules and hierarchy__
+
+My goal was to design independent modules to get maximal extensibilty
+and modularity. It was hard because this is a small exercise and most of
+the modules are dependant on the others at least in some parts of the code.
+
+Driver (MIR): uses Parser and Song modules.
+Runs the modules according to the desired flow.
+
+Parser: uses VocalSong and InstrumentalSong modules.
+A class of static methods to parse the required files.
+
+Song: abstract class for a song.
+Contains all the data of a song object, and some virtual abstract methods.
+
+Vocal/InstrumentalSong: inherits from Song module.
+Contains specific methods for these kinds of songs.
+
+Although wasn't necessary, I used inheritance in the songs modules.
+Most of the data is actually stored in the abstract parent class Song,
+only the specific methods for the different song types are abstract,
+and the inheriting modules implement them according to their specific behavior.
+
+__Data structures__
+
+I used STL containers to handle most of the data.
+The most important of them all was the multimap<int, Song*, greater<int>>
+('typedef'ed SortedSongsList).
+This was used to keep a sorted list of songs. The key in this map is the song's score,
+and the value is the pointer to that song.
+Other containers I used were: Vectors for the songs (vector<Song*> typedef SongsList),
+unordered_map<string, int> for the song's tags,
+unordered_multiset<string> for the song's data (lyrics / instruments),
+pair<string, pair<double, double>> for the special bpm known words (typedef BpmWord)
+unordered_map<string, pair<double, double>> for the bpm words (typedef BpmWordsMap).
+
+I chose those data structures to try to get minimal run-times and maximal readabilty
+(most of the maps are hash-tables and typedef supposes to make reading those template-
+cryptic syntaxes a bit easier)

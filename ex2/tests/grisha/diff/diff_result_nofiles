@@ -1,4 +1,0 @@
-1c1
-< Usage: ./MIR <songs_data_file> <learned_parameters_file> <queries_file>
----
-> Usage: MIR < songs file name > < parameters file name > < queries file name >

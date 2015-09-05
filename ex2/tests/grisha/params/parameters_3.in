@@ -1,8 +1,0 @@
-tagMatchScore: 50
-lyricsMatchScore: 12
-instrumentMatchScore: 30
-bpmLikelihoodWeight: 400
-sad: 30.1 , 9.8
-cheerful: 97.65 , 30
-angry: 110 , 25.4
-romantic: 60 , 20

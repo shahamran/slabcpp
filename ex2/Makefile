@@ -30,7 +30,7 @@ all: MIR tar
 	echo made all
 
 clean:
-	rm -fv MIR *.o *.exe*
+	rm -fv MIR *.o *.exe* ${TAR_NAME}
 
 VALGRIND_FLAGS = --leak-check=full --show-possibly-lost=yes --show-reachable=yes --undef-value-errors=yes
 

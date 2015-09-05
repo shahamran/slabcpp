@@ -1,0 +1,1 @@
+Usage: ./MIR <songs_data_file> <learned_parameters_file> <queries_file>

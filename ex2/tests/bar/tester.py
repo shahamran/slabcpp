@@ -30,7 +30,7 @@ os.system("rm -f diff/*")
 for i in range(1, 4):
     for j in range(1, 4):
         for k in range(1, 9):
-            os.system("MIR tests_files/songs_{}.in tests_files/parameters_{}.in tests_files/queries_{}.in > results_out/result_{}_{}_{}".format(i, j, k, i, j, k, i, j, k))
+            os.system("./MIR tests_files/songs_{}.in tests_files/parameters_{}.in tests_files/queries_{}.in > results_out/result_{}_{}_{}".format(i, j, k, i, j, k, i, j, k))
             os.system("diff results_out/result_{}_{}_{}  school_out/school_{}_{}_{} > diff/diff_{}_{}_{""}".format(i,j, k,i,j,k,i,j,k))
             if os.stat("diff/diff_{}_{}_{}".format(i, j, k)).st_size != 0:
                 print("+++++++++++++++++++\nFailed test {}_{}_{}".format(i, j, k))

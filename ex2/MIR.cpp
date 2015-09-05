@@ -44,8 +44,8 @@ void updateSongsRating(Parser::SongsList& output, const Parser::SongsList& songs
 			{
 				m = foundBpmWord->second.first;
 				s = foundBpmWord->second.second;
-				bpmLikelihood = floor(exp(-std::pow(bpm - m, 2) / (2 * std::pow(s, 2)))); // -----------------
-				rating += (int)bpmLikelihood * params._bpmLikelihoodWeight;
+				bpmLikelihood = exp(-std::pow(bpm - m, 2) / (2 * std::pow(s, 2)));
+				rating += (int)floor(bpmLikelihood * params._bpmLikelihoodWeight);
 			}
 		}
 		output.insert(std::make_pair(rating, curr->second));
@@ -88,6 +88,11 @@ int main(int argc, char* argv[])
 		{
 			printSong(*i_song);
 		}
+	}
+	// Clean up
+	for (Parser::SongsList::iterator curr = songsList.begin(); curr != songsList.end(); curr++)
+	{
+		delete curr->second;
 	}
 	return EXIT_SUCCESS;
 }

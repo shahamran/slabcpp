@@ -1,7 +1,7 @@
 import os
 import time
 
-EX="MIR"
+EX="./MIR"
 
 if not os.path.isdir("results_out"):
 	os.system("mkdir results_out")

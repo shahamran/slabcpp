@@ -107,7 +107,9 @@ void runQueries(const std::string& queriesFile, const Parser::Parameters& params
 	{
 		std::getline(instream, query);
 		if (query.size() == 0) // Ignore empty queries.
+		{
 			continue;
+		}
 		updateSongsRating(sortedList, songs, params, query);
 		printSortedList(sortedList, query);
 	}

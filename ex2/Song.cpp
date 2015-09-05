@@ -37,7 +37,9 @@ Song::Song(const std::string& title, const std::string& tagsStr, const std::stri
 	{
 		iss >> result;
 		if (result.size() > 0)
+		{
 			_data.insert(result);
+		}
 	}
 }
 

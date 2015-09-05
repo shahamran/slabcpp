@@ -3,6 +3,9 @@
 
 #include "Song.h"
 
+/**
+ * This class represents a song that has lyrics in it.
+ */
 class VocalSong : public Song
 {
 public:

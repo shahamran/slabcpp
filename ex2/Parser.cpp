@@ -23,7 +23,7 @@ const std::string SEPARATOR = "=",
  * i.e for a line of the following format: <name>: <data>
  * this function returns <data>.
  */
-inline std::string& Parser::parseNamedLine(std::string& dest, const std::string& line)
+inline std::string& Parser::_parseNamedLine(std::string& dest, const std::string& line)
 {
 	dest = line.substr(line.find(NAME_SUFFIX) + 2); // + 1 for <:> +1 for <space>
 	return dest;
@@ -32,7 +32,7 @@ inline std::string& Parser::parseNamedLine(std::string& dest, const std::string&
 /**
  * Parses a line that contains a list (bounded by { and } chars).
  */
-std::string& Parser::parseListLine(std::string& dest, const std::string& line) 
+std::string& Parser::_parseListLine(std::string& dest, const std::string& line) 
 {
 	size_t pos1 = line.find(OPEN_GROUP), pos2 = line.find(CLOSE_GROUP);
 	dest = line.substr(pos1 + 1, pos2 - pos1 - 1);
@@ -60,19 +60,19 @@ Parser::Parameters& Parser::parseParameters(Parameters& prms, const std::string&
 
 	// Tags line
 	std::getline(instream, line);
-	std::istringstream(parseNamedLine(dest, line)) >> prms._tagMatchScore;
+	std::istringstream(_parseNamedLine(dest, line)) >> prms._tagMatchScore;
 
 	// Lyrics line
 	std::getline(instream, line);
-	std::istringstream(parseNamedLine(dest, line)) >> prms._lyricsMatchScore;
+	std::istringstream(_parseNamedLine(dest, line)) >> prms._lyricsMatchScore;
 
 	// Instruments line
 	std::getline(instream, line);
-	std::istringstream(parseNamedLine(dest, line)) >> prms._instrumentMatchScore;
+	std::istringstream(_parseNamedLine(dest, line)) >> prms._instrumentMatchScore;
 
 	// BpmLikelihood line
 	std::getline(instream, line);
-	std::istringstream(parseNamedLine(dest, line)) >> prms._bpmLikelihoodWeight;
+	std::istringstream(_parseNamedLine(dest, line)) >> prms._bpmLikelihoodWeight;
 
 	// Insert Bpm special words into the bpm words map in the parameters struct
 	BpmWord bpmWord; // BpmWord is a std::pair in which the first item is the word
@@ -83,7 +83,9 @@ Parser::Parameters& Parser::parseParameters(Parameters& prms, const std::string&
 		std::getline(instream, line);
 		colons = line.find(NAME_SUFFIX);
 		if (colons == std::string::npos || colons == 0) // Make sure this is a line with ':'
-			continue;									// and that this is not an empty word
+		{												// and that this is not an empty word
+			continue;
+		}									
 		comma = line.find(BPM_SEP);
 		bpmWord.first = line.substr(0, colons); // The bpm special word
 		std::istringstream(line.substr(colons + 1, comma)) >> bpmWord.second.first; // m
@@ -151,29 +153,31 @@ Parser::SongsList& Parser::parseSongs(SongsList& songs, const std::string& fileN
 				firstSong = false;
 			}
 			if (lastSong)
+			{
 				break;
+			}
 		}
 		// Get title
 		getline(instream, line);
-		parseNamedLine(title, line);
+		_parseNamedLine(title, line);
 		// Get tags
 		getline(instream, line);
-		parseListLine(tags, line);
+		_parseListLine(tags, line);
 		// Get data (lyrics / instruments)
 		getline(instream, line);
-		parseListLine(data, line);
+		_parseListLine(data, line);
 		// Determine whether this is a vocal or instrumental song
 		isVocal = line.find(LYRICS) == 0 ? true : false;
 		// Get author (performer / composer)
 		getline(instream, line);
-		parseNamedLine(author, line);
+		_parseNamedLine(author, line);
 		// If this is an instrumental song, check if there is a bpm value.
 		if (!isVocal)
 		{
 			getline(instream, line);
 			if (line.find(BPM) == 0) // Checks if this is a bpm line
 			{
-				parseNamedLine(bpmStr, line);
+				_parseNamedLine(bpmStr, line);
 				std::istringstream(bpmStr) >> bpm;
 				getline(instream, line); // Move to the next line.
 			}

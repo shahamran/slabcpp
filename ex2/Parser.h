@@ -10,6 +10,9 @@
 #include "VocalSong.h"
 #include "InstrumentalSong.h"
 
+/**
+ * This class is a collection of static methods to parse files for the program.
+ */
 class Parser
 {
 public:
@@ -76,14 +79,14 @@ private:
 	/**
 	 * Parses a line that contains a list (bounded by { and } chars).
 	 */
-	static std::string& parseListLine(std::string& dest, const std::string& line);
+	static std::string& _parseListLine(std::string& dest, const std::string& line);
 
 	/**
 	 * Parses a line that starts with a name.
 	 * i.e for a line of the following format: <name>: <data>
 	 * this function returns <data>.
 	 */
-	static std::string& parseNamedLine(std::string& dest, const std::string& line);
+	static std::string& _parseNamedLine(std::string& dest, const std::string& line);
 };
 
 #endif

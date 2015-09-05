@@ -2,10 +2,8 @@
 #include <sstream>
 #include <fstream>
 
-#define NO_SCORE 0
-
-
 const char NAME_SUFFIX = ':',
+		   BPM_SEP = ',',
 		   OPEN_GROUP = '{',
 		   CLOSE_GROUP = '}';
 
@@ -39,9 +37,10 @@ Parser::Parameters& Parser::parseParameters(Parameters& prms, const std::string&
 	{
 		std::cerr << "Error! Can't open file: " << fileName << "." << std::endl;
 	}
-
-	std::string line = "";
-	std::string dest = "";
+	// Empty destination parameters list.
+	prms.clear();
+	std::string line = "",
+			    dest = ""; // A 'temporary' string for small strings in the line.
 
 	// Tags line
 	std::getline(instream, line);
@@ -60,19 +59,19 @@ Parser::Parameters& Parser::parseParameters(Parameters& prms, const std::string&
 	std::istringstream(parseNamedLine(dest, line)) >> prms._bpmLikelihoodWeight;
 
 	// Insert Bpm special words into the bpm words map in the parameters struct
-	BpmWord bpmWord;
+	BpmWord bpmWord; // BpmWord is a std::pair in which the first item is the word
+					 // and the second item is a std::pair of 2 doubles: m, s.
 	size_t colons, comma;
 	while (instream.good())
 	{
 		std::getline(instream, line);
 		colons = line.find(NAME_SUFFIX);
-		comma = line.find(',');
+		comma = line.find(BPM_SEP);
 		bpmWord.first = line.substr(0, colons); // The bpm special word
 		std::istringstream(line.substr(colons + 1, comma)) >> bpmWord.second.first; // m
 		std::istringstream(line.substr(comma + 1)) >> bpmWord.second.second;        // s
 		prms._bpmWords.insert(bpmWord);
 	}
-
 	instream.close();
 	return prms;
 }
@@ -84,7 +83,8 @@ Parser::StringVector& Parser::parseQueries(StringVector& queries, const std::str
 	{
 		std::cerr << "Error! Can't open file: " << fileName << "." << std::endl;
 	}
-
+	// Empty destination queries list.
+	queries.clear();
 	std::string line = "";
 	while (instream.good())
 	{
@@ -103,7 +103,8 @@ Parser::SongsList& Parser::parseSongs(SongsList& songs, const std::string& fileN
 	{
 		std::cerr << "Error! Can't open file: " << fileName << "." << std::endl;
 	}
-
+	// Empty destination songs list.
+	songs.clear();
 	std::string line = "",
 				title = "",
 				tags = "",
@@ -137,7 +138,7 @@ Parser::SongsList& Parser::parseSongs(SongsList& songs, const std::string& fileN
 					bpm = 0.0;
 				}
 				// Add the new song to the songs list with no rating.
-				songs.insert(std::pair<int, Song*>(NO_SCORE, song));
+				songs.push_back(song);
 			}
 			else
 			{

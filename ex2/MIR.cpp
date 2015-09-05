@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <cmath>
 #include "Song.h"
 #include "Parser.h"
 
@@ -28,21 +29,21 @@ void updateSongsRating(Parser::SongsList& output, const Parser::SongsList& songs
 	Parser::BpmWordsMap::const_iterator foundBpmWord;
 	double m, s, bpm, bpmLikelihood;
 	
-	for (Parser::SongsList::iterator curr = songs.begin; curr != songs.end; curr++)
+	for (Parser::SongsList::const_iterator curr = songs.begin(); curr != songs.end(); curr++)
 	{
 		rating = 0;
 		rating += (curr->second->hasTag(query)) * params._tagMatchScore;
 		rating += (curr->second->containsWord(query)) * params._lyricsMatchScore;
 		rating += (curr->second->hasInstrument(query)) * params._instrumentMatchScore;
 		foundBpmWord = params._bpmWords.find(query);
-		if (foundBpmWord != params._bpmWords.end)
+		if (foundBpmWord != params._bpmWords.end())
 		{
-			bpm = curr->second->getBpm;
+			bpm = curr->second->getBpm();
 			if (bpm != NO_BPM)
 			{
 				m = foundBpmWord->second.first;
 				s = foundBpmWord->second.second;
-				bpmLikelihood = floor(exp(-pow(bpm - m, 2) / (2 * pow(s, 2)))); // -----------------
+				bpmLikelihood = floor(exp(-std::pow(bpm - m, 2) / (2 * std::pow(s, 2)))); // -----------------
 				rating += (int)bpmLikelihood * params._bpmLikelihoodWeight;
 			}
 		}
@@ -50,13 +51,12 @@ void updateSongsRating(Parser::SongsList& output, const Parser::SongsList& songs
 	}
 }
 
-void printResult(const std::string& query, const std::pair<int, Song*>& result)
+void printSong(const std::pair<int, Song*>& result)
 {
 	const int rating = result.first;
 	const Song* song = result.second;
 	if (rating <= MINIMAL_SCORE)
 		return;
-	std::cout << SEPARATOR << std::endl << query << std::endl << std::endl;
 	std::cout << song->getTitle() << TAB << rating << TAB << song->getDetails() << std::endl;
 }
 
@@ -75,15 +75,17 @@ int main(int argc, char* argv[])
 	Parser::Parameters prms;
 	Parser::SongsList songsList, sortedList;
 	Parser::StringVector queries;
-	Parser::parse<Parser::Parameters>(prms, paramsFileName);
-	Parser::parse<Parser::SongsList>(songsList, dataFileName);
-	Parser::parse<Parser::StringVector>(queries, queriesFileName);
-	for (Parser::StringVector::iterator curr = queries.begin; curr != queries.end; curr++)
+	Parser::parseParameters(prms, paramsFileName);
+	Parser::parseSongs(songsList, dataFileName);
+	Parser::parseQueries(queries, queriesFileName);
+	for (Parser::StringVector::iterator curr = queries.begin(); curr != queries.end(); curr++)
 	{
 		updateSongsRating(sortedList, songsList, prms, *curr);
-		for (Parser::SongsList::iterator i_song = sortedList.begin; i_song != sortedList.end; i_song++)
+		std::cout << SEPARATOR << std::endl << "Query word: " << *curr << std::endl << std::endl;
+		for (Parser::SongsList::iterator i_song = sortedList.begin();
+			 i_song != sortedList.end(); i_song++)
 		{
-			printResult(*curr, *i_song);
+			printSong(*i_song);
 		}
 	}
 	return EXIT_SUCCESS;

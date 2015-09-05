@@ -25,11 +25,11 @@ public:
 		BpmWordsMap _bpmWords;
 	};
 
-	Parameters& parseParameters(Parameters& prms, const std::string& fileName);
+	static Parameters& parseParameters(Parameters& prms, const std::string& fileName);
 
-	SongsList& parseSongs(SongsList& songs, const std::string& fileName);
+	static SongsList& parseSongs(SongsList& songs, const std::string& fileName);
 
-	StringVector& parseQueries(StringVector& queries, const std::string fileName);
+	static StringVector& parseQueries(StringVector& queries, const std::string fileName);
 
 private:
 

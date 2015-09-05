@@ -1,5 +1,6 @@
 #ifndef _SONG_H
 #define _SONG_H
+#define UNUSED(x) (void)(x)
 #define NO_BPM 0.0
 
 #include <iostream>

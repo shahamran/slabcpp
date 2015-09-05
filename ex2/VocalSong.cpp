@@ -15,11 +15,6 @@ inline int VocalSong::containsWord(const std::string& word) const
 	return _data.count(word);
 }
 
-inline bool VocalSong::hasInstrument(const std::string& instrument) const
-{
-	return false;
-}
-
 inline std::string VocalSong::getDetails() const
 {
 	return "lyrics by: " + _author;

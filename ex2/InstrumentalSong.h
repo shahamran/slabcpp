@@ -10,7 +10,13 @@ public:
 					 const std::string& instruments, const std::string& performer,
 					 double bpm = NO_BPM);
 	virtual ~InstrumentalSong();
-	int containsWord(const std::string& word) const override;
+
+	int containsWord(const std::string& word) const override
+	{
+		UNUSED(word);
+		return 0;
+	}
+
 	bool hasInstrument(const std::string& instrument) const override;
 	std::string getDetails() const override;
 };

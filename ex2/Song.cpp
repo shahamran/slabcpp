@@ -38,7 +38,7 @@ Song::~Song()
 int Song::hasTag(const std::string& tag) const
 {
 	TagsList::const_iterator foundTag = _tags.find(tag);
-	if (foundTag == _tags.end)
+	if (foundTag == _tags.end())
 	{
 		return NO_TAG;
 	}

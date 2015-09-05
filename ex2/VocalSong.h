@@ -9,7 +9,11 @@ public:
 			  const std::string& lyrics, const std::string& author);
 	virtual ~VocalSong();
 	int containsWord(const std::string& word) const override;
-	bool hasInstrument(const std::string& instrument) const override;
+	bool hasInstrument(const std::string& instrument) const override
+	{
+		UNUSED(instrument);
+		return false;
+	}
 	std::string getDetails() const override;
 };
 

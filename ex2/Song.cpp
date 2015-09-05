@@ -23,6 +23,7 @@ Song::Song(const std::string& title, const std::string& tagsStr, const std::stri
 			_tags.insert(std::pair<std::string, int>(result, weight));
 		}
 	}
+	iss.clear();
 	iss.str(data);
 	while (iss.good())
 	{

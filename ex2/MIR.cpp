@@ -25,6 +25,7 @@ enum Argument
 void updateSongsRating(Parser::SongsList& output, const Parser::SongsList& songs, 
 					   const Parser::Parameters& params, const std::string& query)
 {
+	output.clear();
 	int rating = 0;
 	Parser::BpmWordsMap::const_iterator foundBpmWord;
 	double m, s, bpm, bpmLikelihood;

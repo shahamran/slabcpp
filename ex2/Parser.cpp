@@ -21,7 +21,7 @@ const std::string SEPARATOR = "=",
 
 inline std::string& Parser::parseNamedLine(std::string& dest, const std::string& line)
 {
-	dest = line.substr(line.find(NAME_SUFFIX) + 1);
+	dest = line.substr(line.find(NAME_SUFFIX) + 2);
 	return dest;
 }
 
@@ -89,7 +89,8 @@ Parser::StringVector& Parser::parseQueries(StringVector& queries, const std::str
 	while (instream.good())
 	{
 		std::getline(instream, line);
-		queries.push_back(line);
+		if (line.size() > 0)
+			queries.push_back(line);
 	}
 	instream.close();
 	return queries;

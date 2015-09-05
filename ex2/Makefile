@@ -22,6 +22,13 @@ InstrumentalSong.o: InstrumentalSong.cpp InstrumentalSong.h Song.h
 Parser.o: Parser.h Parser.cpp VocalSong.h InstrumentalSong.h
 	${CC} ${C_FLAGS} -c Parser.cpp
 
+SONGS = tests/songs_1.in
+PARAMS = tests/parameters_2.in
+QUERIES = tests/queries_5.in
+
+ValgrindTest: MIR
+	valgrind ${VALGRIND_FLAGS} ./MIR ${SONGS} ${PARAMS} ${QUERIES}
+
 tar: ${TAR_FILES}
 	tar -cvf ${TAR_NAME} ${TAR_FILES}
 

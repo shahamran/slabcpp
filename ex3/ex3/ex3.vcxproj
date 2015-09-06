@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CB0B8EF2-0DDC-4CD3-A667-87FC973A6985}</ProjectGuid>
+    <ProjectGuid>{699CB903-4DC5-450F-B4B3-2E33FC8F0BF3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ex2</RootNamespace>
+    <RootNamespace>ex3</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -146,17 +146,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\InstrumentalSong.h" />
-    <ClInclude Include="..\Parser.h" />
-    <ClInclude Include="..\Song.h" />
-    <ClInclude Include="..\VocalSong.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\InstrumentalSong.cpp" />
-    <ClCompile Include="..\MIR.cpp" />
-    <ClCompile Include="..\Parser.cpp" />
-    <ClCompile Include="..\Song.cpp" />
-    <ClCompile Include="..\VocalSong.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

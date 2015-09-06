@@ -18,6 +18,14 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Complex.cpp" />
+    <ClCompile Include="..\GenericMatrixDriver.cpp" />
+    <ClCompile Include="..\ParallelChecker.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Complex.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{699CB903-4DC5-450F-B4B3-2E33FC8F0BF3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -145,8 +153,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -5,9 +5,11 @@
 #include <vector>
 #include <thread>
 #include "Complex.h"
+#include "MatrixExceptions.hpp"
 
 #define DEFAULT_VALUE 0
 #define DEFAULT_SIZE 1
+#define MINIMAL_SIZE 1
 #define PRINT_COLS_SEPARATOR '\t'
 #define PRINT_ROWS_SEPARATOR std::endl
 
@@ -16,54 +18,14 @@ class Matrix
 {
 public:
 
+	typedef T value_type;
+	typedef std::vector<T> MatRow; // A row in the matrix
+
 	class const_iterator
 	{
 	public:
-		const_iterator(size_t row, size_t col) : _row(row), _col(col)
-		{
-		}
 
-		const_iterator() : const_iterator(0, 0)
-		{
-		}
-
-		const_iterator operator++(int a)
-		{
-			const_iterator old = *this;
-			_increment();
-			return old;
-		}
-
-		const_iterator operator++()
-		{
-			_increment();
-			return *this;
-		}
-
-		const T* operator->()
-		{
-			return &_data[_row][_col];
-		}
-
-		const T& operator*()
-		{
-			return _data[_row][_col];
-		}
-	private:
-		void _increment()
-		{
-			_col++;
-			if (_col >= _cols)
-			{
-				_row++;
-				_col = 0;
-			}
-		}
-		size_t _row, _col;
 	};
-
-	typedef T value_type;
-	typedef std::vector<T> MatRow; // A row in the matrix
 
 	/**
 	 * Swaps the internal members of one matrix with another.
@@ -84,15 +46,20 @@ public:
 	Matrix(size_t rows, size_t cols) :
 		_rows(rows), _cols(cols)
 	{
+		// make sure matrix dimensions are positive
+		if (rows < MINIMAL_SIZE || cols < MINIMAL_SIZE)
+		{
+			// Throw exception
+		}
 		_data = std::vector<MatRow>(rows);
-		for (size_t i = 0; i < rows; i++)
+		for (size_t i = 0; i < rows; ++i)
 		{
 			_data[i] = MatRow(cols, DEFAULT_VALUE);
 		}
 	}
 
 	/**
-	 * Constructs a default sized matrix (1x1).
+	 * Constructs a default sized matrix (1x1) with default value (0).
 	 */
 	Matrix() : Matrix<T>(DEFAULT_SIZE, DEFAULT_SIZE)
 	{
@@ -105,7 +72,7 @@ public:
 	Matrix(const Matrix<T>& rhs) :
 		Matrix<T>(rhs._rows, rhs._cols)
 	{
-		for (size_t i = 0; i < _rows; i++)
+		for (size_t i = 0; i < _rows; ++i)
 		{
 			std::copy(rhs._data[i].begin(), rhs._data[i].end(), _data[i].begin());
 		}
@@ -166,14 +133,25 @@ public:
 	 * rhs.rows() == this->rows() && rhs.cols() == this->cols()
 	 * @return The result of addition (matrix of the same dimensions).
 	 */
-	const Matrix<T>& operator+(const Matrix<T>& rhs) const
+	const Matrix<T> operator+(const Matrix<T>& rhs) const
 	{
 		if (_rows != rhs._rows || _cols != rhs._cols)
 		{
-			// Throw dimension exception
+			throw bad_addition();
 		}
-		
-		// Parellel / non-Parellel
+		Matrix<T> result(*this);
+		if (_isParallel)
+		{
+			_multithreadAddition(result, rhs);
+		}
+		else
+		{
+			for (size_t row = 0; row < _rows, ++row)
+			{
+				_addRow(result._data[row], rhs._data[row]);
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -182,21 +160,25 @@ public:
 	 * rhs.rows() == this->rows() && rhs.cols() == this->cols()
 	 * @return The result of subtraction matrix of the same dimensions).
 	 */
-	const Matrix<T>& operator-(const Matrix<T>& rhs) const
+	const Matrix<T> operator-(const Matrix<T>& rhs) const
 	{
-
-		// Same
-	}
-
-	/**
-	 * Multiply this matrix by a scalar.
-	 * @param scalar The scalar to multiply this matrix by.
-	 * @param mat The matrix to multiply.
-	 * @return The result of the multiplication by scalar.
-	 */
-	friend const Matrix<T>& operator*(T scalar, const Matrix<T>& mat)
-	{
-		// Use iterator to multiply by scalar
+		if (_rows != rhs._rows || _cols != rhs._cols)
+		{
+			throw bad_addition();
+		}
+		Matrix<T> result(*this);
+		if (_isParallel)
+		{
+			_multithreadAddition(result, rhs, false);
+		}
+		else
+		{
+			for (size_t row = 0; row < _rows, ++row)
+			{
+				_addRow(result._data[row], rhs._data[row], false);
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -204,7 +186,7 @@ public:
 	 * @param rhs A matrix that satisfies: rhs.rows() == this_matrix.cols()
 	 * @return The result of the multiplication.
 	 */
-	const Matrix<T>& operator*(const Matrix<T>& rhs) const
+	const Matrix<T> operator*(const Matrix<T>& rhs) const
 	{
 		if (_cols != rhs._rows)
 		{
@@ -264,9 +246,9 @@ public:
 	const Matrix<T> trans() const
 	{
 		Matrix<T> result(_cols, _rows);
-		for (size_t row = 0; row < _rows; row++)
+		for (size_t row = 0; row < _rows; ++row)
 		{
-			for (size_t col = 0; col < _cols; col++)
+			for (size_t col = 0; col < _cols; ++col)
 			{
 				result(col, row) = _data[row][col];
 			}
@@ -286,7 +268,7 @@ public:
 			// throw exception
 		}
 		T result(0);
-		for (size_t i = 0; i < _rows; i++)
+		for (size_t i = 0; i < _rows; ++i)
 		{
 			result += _data[i][i];
 		}
@@ -296,16 +278,16 @@ public:
 	/**
 	 * Writes the matrix values to a given outstream in the following format:
 	 * Every two columns are separated by PRINT_COLS_SEPARATOR ('\t').
-	 * Every two line are separated by PRINT_ROWS_SEPARATOR (std::endl <=> '\n').
+	 * Every two line are separated by PRINT_ROWS_SEPARATOR (std::endl - new line).
 	 * (See MACROS).
 	 * @param os The output stream to write to.
 	 * @param mat The matrix to write.
 	 */
 	friend std::ostream& operator<<(std::ostream& os, const Matrix<T>& mat)
 	{
-		for (size_t row = 0; row < mat._rows; row++)
+		for (size_t row = 0; row < mat._rows; ++row)
 		{
-			for (size_t col = 0; col < mat._cols - 1; col++)
+			for (size_t col = 0; col < mat._cols - 1; ++col)
 			{
 				os << mat(row, col) << PRINT_COLS_SEPARATOR;
 			}
@@ -332,26 +314,53 @@ public:
 
 	const_iterator begin()
 	{
-		return const_iterator();
+		return const_iterator(*this);
 	}
 
 	const_iterator end()
 	{
-		return const_iterator(_rows, 0);
+		return const_iterator(_rows, 0, *this);
+	}
+
+	void setParallel(bool isParallel)
+	{
+		_isParallel = isParallel;
 	}
 
 private:
-	
-	void _addFirstHalf(const Matrix<T>& rhs)
+	static void _addRow(MatRow& row1, const MatRow& row2, bool add = true)
 	{
-
+		if (add)
+		{
+			for (size_t i = 0; i < row1.size(); ++i)
+			{
+				row1[i] += row2[i];
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < row1.size(); ++i)
+			{
+				row1[i] -= row2[i];
+			}
+		}
+		
 	}
 
-	void _addSecondHalf(const Matrix<T>& rhs)
+	void _multithreadAddition(Matrix<T>& mat, const Matrix<T>& other, bool add = true) const
 	{
-
+		std::vector<std::thread> threads(_rows);
+		for (size_t row = 0; row < _rows; ++row)
+		{
+			threads[row] = std::thread(_addRow, std::ref(mat._data[row]), std::ref(other._data[row]), add);
+		}
+		for (size_t row = 0; row < _rows; ++row)
+		{
+			threads[row].join();
+		}
 	}
 
+	bool _isParallel;
 	size_t _rows, _cols;
 	std::vector<MatRow> _data;
 };
@@ -366,9 +375,9 @@ template<>
 const Matrix<Complex> Matrix<Complex>::trans() const
 {
 	Matrix<Complex> result(_cols, _rows);
-	for (size_t row = 0; row < _rows; row++)
+	for (size_t row = 0; row < _rows; ++row)
 	{
-		for (size_t col = 0; col < _cols; col++)
+		for (size_t col = 0; col < _cols; ++col)
 		{
 			result(col, row) = (*this)(row, col).conj();
 		}

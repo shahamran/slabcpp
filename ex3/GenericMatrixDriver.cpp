@@ -206,7 +206,7 @@ void binaryOperation(const int operatorChoice)
 	std::cout << m2;
 
 	Matrix<T> resultMat;
-assert(m1==m1);
+	//assert(m1);
 
 	switch(operatorChoice)
 	{
@@ -226,7 +226,7 @@ assert(m1==m1);
 	 case MUL:
 		 try
 		 {
-			 assert(m1.rows()==m2.cols());			 
+			 assert(m1.cols()==m2.rows());			 
 			 resultMat = m1 * m2;
 		 }
 		 catch (std::exception& exception)
@@ -292,8 +292,9 @@ void getNumFromString(const std::string &str, Complex *num)
 	 std::istringstream iss(str);
 	 double r,i=0;
 	 iss>>r;
-	 bool b=(iss>>i);
-	 if (!b ){
+	 bool b = (iss >> i);
+	 if (!b)
+	 {
 	 	i=0;
 	 };
 	Complex number(r,i);

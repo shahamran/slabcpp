@@ -21,11 +21,13 @@
   <ItemGroup>
     <ClCompile Include="..\Complex.cpp" />
     <ClCompile Include="..\GenericMatrixDriver.cpp" />
+    <ClCompile Include="..\Matrix.cpp" />
     <ClCompile Include="..\ParallelChecker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Complex.h" />
     <ClInclude Include="..\Matrix.hpp" />
+    <ClInclude Include="..\MatrixExceptions.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{699CB903-4DC5-450F-B4B3-2E33FC8F0BF3}</ProjectGuid>

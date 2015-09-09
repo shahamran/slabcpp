@@ -21,10 +21,7 @@
     <ClCompile Include="..\GenericMatrixDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ParallelChecker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Matrix.cpp">
+    <ClCompile Include="..\MatrixExceptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -33,10 +30,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Matrix.hpp">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\MatrixExceptions.hpp">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

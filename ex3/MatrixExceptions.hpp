@@ -2,32 +2,95 @@
 #define _MATRIX_EXCEPTIONS_HPP
 
 #include <stdexcept>
+#include <sstream>
+#include <iostream>
 
-class bad_dimensions : public std::logic_error
+/**
+ *
+ */
+struct MatDimensions
 {
-public:
-	bad_dimensions() : logic_error("Matrix dimensions don't fit")
-	{
-	}
+private:
+	size_t _rows, _cols;
 
-	bad_dimensions(const std::string& msg) : logic_error(msg)
-	{
-	}
+public:
+
+	MatDimensions(size_t rows, size_t cols);
+
+	MatDimensions();
+
+	friend std::ostream& operator<<(std::ostream& os, const MatDimensions& dims);
 };
 
+/**
+ *
+ */
+class bad_dimensions : public std::logic_error
+{
+protected:
+	MatDimensions _dim1, _dim2;
+	static std::ostringstream _oss;
+
+public:
+
+	bad_dimensions(MatDimensions dim1, MatDimensions dim2, 
+				   const std::string& msg = "Matrix dimensions don't fit");
+
+	bad_dimensions(MatDimensions dim, const std::string& msg = "Matrix dimensions don't fit");
+
+	const char* what() const throw() override = 0;
+};
+
+class non_positive : public bad_dimensions
+{
+public:
+
+	non_positive();
+
+	const char* what() const throw() override;
+};
+
+class no_match : public bad_dimensions
+{
+public:
+
+	no_match(MatDimensions mat_size, MatDimensions vec_size, 
+			 const std::string& msg = "Invalid arguments");
+
+	const char* what() const throw() override;
+};
+
+/**
+ *
+ */
 class bad_addition : public bad_dimensions
 {
 public:
-	bad_addition() :
-		bad_dimensions("Couldn't add matrices")
-	{
 
-	}
-	bad_addition(size_t rows1, size_t rows2, size_t cols1, size_t cols2) : 
-		bad_dimensions("Couldn't add matrices")
-	{
+	bad_addition(MatDimensions first, MatDimensions second);
+	
+	const char* what() const throw() override;
+};
 
-	}
+/**
+ *
+ */
+class bad_multiplication : public bad_dimensions
+{
+public:
+
+	bad_multiplication(MatDimensions first, MatDimensions second);
+
+	const char* what() const throw() override;
+};
+
+class bad_trace : public bad_dimensions
+{
+public:
+	
+	bad_trace(MatDimensions first);
+
+	const char* what() const throw() override;
 };
 
 #endif

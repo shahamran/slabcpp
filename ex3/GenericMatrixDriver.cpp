@@ -114,6 +114,7 @@ int main()
 		}
 	}
 
+	system("pause");
 	return 0;
 }
 
@@ -296,9 +297,10 @@ void getNumFromString(const std::string &str, Complex *num)
 	 std::istringstream iss(str);
 	 double r,i=0;
 	 iss>>r;
-	 bool b=(iss>>i);
-	 if (!b ){
-	 	i=0;
+	 bool b= (iss >> i).good();
+	 if (!b)
+	 {
+	 	i = 0;
 	 };
 	Complex number(r,i);
 	*num = number;

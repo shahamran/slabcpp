@@ -5,6 +5,7 @@
 #include <vector>
 #include <thread>
 #include <cassert>
+#include <functional>
 #include "Complex.h"
 #include "MatrixExceptions.hpp"
 
@@ -21,6 +22,7 @@ public:
 	typedef T value_type;
 	typedef std::vector<T> MatData;
 	typedef typename MatData::const_iterator const_iterator;
+	typedef typename MatData::iterator iterator;
 
 	/**
 	 * Swaps the internal members of one matrix with another.
@@ -126,17 +128,19 @@ public:
 			throw bad_addition();
 		}
 		Matrix<T> result(*this);
-		/*if (_isParallel)
+		if (_isParallel)
 		{
 			_multithreadAddition(result, rhs);
 		}
 		else
 		{
-			for (size_t row = 0; row < _rows; ++row)
+			auto dest_it = result._data.begin();
+			auto src_it = rhs._data.cbegin();
+			for (; dest_it != result._data.end(); ++dest_it, ++src_it)
 			{
-				_addRow(result._data[row], rhs._data[row]);
+				*dest_it += *src_it;
 			}
-		}*/
+		}
 		return result;
 	}
 
@@ -152,18 +156,20 @@ public:
 		{
 			throw bad_addition();
 		}
-		Matrix<T> result(*this);/*
+		Matrix<T> result(*this);
 		if (_isParallel)
 		{
 			_multithreadAddition(result, rhs, false);
 		}
 		else
 		{
-			for (size_t row = 0; row < _rows; ++row)
+			auto dest_it = result._data.begin();
+			auto src_it = rhs._data.cbegin();
+			for (; dest_it != result._data.end(); ++dest_it, ++src_it)
 			{
-				_addRow(result._data[row], rhs._data[row], false);
+				*dest_it -= *src_it;
 			}
-		}*/
+		}
 		return result;
 	}
 
@@ -326,45 +332,51 @@ public:
 		return _cols == _rows;
 	}
 
-	void setParallel(bool isParallel)
+	static void setParallel(bool isParallel)
 	{
-		_isParallel = isParallel;
+		if (isParallel != s_isParallel)
+		{
+			std::string msg = isParallel ? "parallel" : "non-parallel";
+			std::cout << "Generic Matrix mode changed to " << msg << " mode." std::endl;
+			s_isParallel = isParallel;
+		}
 	}
 
-private:/*
-	static void _addRow(MatRow& row1, const MatRow& row2, bool add = true)
+private:
+	static void _addRow(Matrix& dest, const Matrix& src, size_t row, bool add = true)
 	{
 		if (add)
 		{
-			for (size_t i = 0; i < row1.size(); ++i)
+			for (size_t i = 0; i < dest._cols; ++i)
 			{
-				row1[i] += row2[i];
+				dest(row, i) += src(row, i);
 			}
 		}
 		else
 		{
-			for (size_t i = 0; i < row1.size(); ++i)
+			for (size_t i = 0; i < dest._cols; ++i)
 			{
-				row1[i] -= row2[i];
+				dest(row, i) -= src(row, i);
 			}
-		}
-		
+		}		
 	}
 
-	void _multithreadAddition(Matrix<T>& mat, const Matrix<T>& other, bool add = true) const
+	void _multithreadAddition(Matrix& dest, const Matrix& src, bool add = true) const
 	{
-		std::vector<std::thread> threads(_rows);
-		for (size_t row = 0; row < _rows; ++row)
+		std::vector<std::thread> threads(dest._rows);
+		for (size_t row = 0; row < dest._rows; ++row)
 		{
-			threads[row] = std::thread(_addRow, std::ref(mat._data[row]), std::ref(other._data[row]), add);
+			threads[row] = std::thread(_addRow,
+									   std::ref(dest),
+									   std::cref(src), row, add);
 		}
 		for (size_t row = 0; row < _rows; ++row)
 		{
 			threads[row].join();
 		}
-	}*/
+	}
 
-	bool _isParallel;
+	static bool s_isParallel = false;
 	size_t _rows, _cols;
 	MatData _data;
 };

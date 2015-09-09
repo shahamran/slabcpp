@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <thread>
+#include <cassert>
 #include "Complex.h"
 #include "MatrixExceptions.hpp"
 
@@ -19,7 +20,7 @@ class Matrix
 public:
 	typedef T value_type;
 	typedef std::vector<T> MatData;
-	typedef MatData::const_iterator const_iterator;
+	typedef typename MatData::const_iterator const_iterator;
 
 	/**
 	 * Swaps the internal members of one matrix with another.
@@ -194,6 +195,17 @@ public:
 			return false;
 		}
 		// Use iterator to check equiality
+		assert(rhs._data.size() == _data.size());
+		auto it = rhs._data.begin();
+		auto my_it = _data.begin();
+		for (; it != rhs._data.end(); ++it, ++my_it)
+		{
+			if (*my_it != *it)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/**
@@ -202,7 +214,7 @@ public:
 	 */
 	bool operator!=(const Matrix<T>& rhs) const
 	{
-		return !operator==(rhs);
+		return !(*this == rhs);
 	}
 	
 	/**

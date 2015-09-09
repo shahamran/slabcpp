@@ -18,6 +18,11 @@ public:
 class bad_addition : public bad_dimensions
 {
 public:
+	bad_addition() :
+		bad_dimensions("Couldn't add matrices")
+	{
+
+	}
 	bad_addition(size_t rows1, size_t rows2, size_t cols1, size_t cols2) : 
 		bad_dimensions("Couldn't add matrices")
 	{

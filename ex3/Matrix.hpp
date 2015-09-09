@@ -18,105 +18,8 @@ class Matrix
 {
 public:
 	typedef T value_type;
-	typedef std::vector<T> MatRow; // A row in the matrix
-	typedef std::vector<MatRow> MatData;
-
-	/**
-	 * A const iterator object for a matrix class.
-	 */
-	class const_iterator
-	{
-	private:
-		size_t _row, _col;
-		const Matrix& _mat;
-
-		void _increment()
-		{
-			if (++_col == _mat._cols)
-			{
-				++_row;
-				_col = 0;
-			}
-		}
-
-		void _decrement()
-		{
-			if (_col-- == 0)
-			{
-				--_row;
-				_col = _mat._cols - 1;
-			}
-		}
-	public:
-		typedef const_iterator self_type;
-		typedef T value_type;
-		typedef T& reference;
-		typedef T* pointer;
-		typedef std::bidirectional_iterator_tag iterator_category;
-
-		const_iterator()
-		{
-
-		}
-
-		const_iterator(const Matrix& mat, size_t row, size_t col) : _row(row), _col(col), _mat(mat)
-		{
-		}
-
-		const_iterator(const Matrix& mat) : const_iterator(mat, 0, 0)
-		{
-		}
-
-		const_iterator(const self_type& other) : const_iterator(other._mat, other._row, other._col)
-		{			
-		}
-
-		self_type operator++(int junk)
-		{
-			self_type i = *this;
-			_increment();
-			return i; 
-		}
-
-		self_type operator++() 
-		{
-			_increment(); 
-			return *this; 
-		}
-
-		self_type operator--(int junk)
-		{
-			self_type i = *this;
-			_decrement();
-			return i;
-		}
-
-		self_type operator--()
-		{
-			_decrement();
-			return *this;
-		}
-
-		const value_type& operator*() 
-		{
-			return _mat(_row,_col); 
-		}
-
-		const value_type* operator->() 
-		{
-			return &(_mat._data[_row][_col]); 
-		}
-
-		bool operator==(const self_type& rhs) 
-		{
-			return _row == rhs._row && _col == rhs._col;
-		}
-
-		bool operator!=(const self_type& rhs) 
-		{
-			return _row != rhs._row || _col != rhs._col;
-		}
-	};
+	typedef std::vector<T> MatData;
+	typedef MatData::const_iterator const_iterator;
 
 	/**
 	 * Swaps the internal members of one matrix with another.
@@ -142,11 +45,7 @@ public:
 		{
 			// Throw exception
 		}
-		_data = std::vector<MatRow>(rows);
-		for (size_t i = 0; i < rows; ++i)
-		{
-			_data[i] = MatRow(cols, DEFAULT_VALUE);
-		}
+		_data = MatData(rows * cols, DEFAULT_VALUE);
 	}
 
 	/**
@@ -163,10 +62,7 @@ public:
 	Matrix(const Matrix<T>& rhs) :
 		Matrix<T>(rhs._rows, rhs._cols)
 	{
-		for (size_t i = 0; i < _rows; ++i)
-		{
-			std::copy(rhs._data[i].begin(), rhs._data[i].end(), _data[i].begin());
-		}
+		std::copy(rhs._data.begin(), rhs._data.end(), _data.begin());
 	}
 
 	/**
@@ -193,14 +89,7 @@ public:
 		{
 			// Throw exception
 		}
-		auto curr = cells.begin();
-		for (size_t row = 0; row < _rows; ++row)
-		{
-			for (size_t col = 0; col < _cols; ++col)
-			{
-				_data[row][col] = *curr++;
-			}
-		}
+		std::copy(cells.begin(), cells.end(), _data.begin());
 	}
 
 	/**
@@ -236,7 +125,7 @@ public:
 			throw bad_addition();
 		}
 		Matrix<T> result(*this);
-		if (_isParallel)
+		/*if (_isParallel)
 		{
 			_multithreadAddition(result, rhs);
 		}
@@ -246,7 +135,7 @@ public:
 			{
 				_addRow(result._data[row], rhs._data[row]);
 			}
-		}
+		}*/
 		return result;
 	}
 
@@ -262,7 +151,7 @@ public:
 		{
 			throw bad_addition();
 		}
-		Matrix<T> result(*this);
+		Matrix<T> result(*this);/*
 		if (_isParallel)
 		{
 			_multithreadAddition(result, rhs, false);
@@ -273,7 +162,7 @@ public:
 			{
 				_addRow(result._data[row], rhs._data[row], false);
 			}
-		}
+		}*/
 		return result;
 	}
 
@@ -288,7 +177,9 @@ public:
 		{
 			// Throw exception
 		}
+		Matrix<T> result(_rows, rhs._cols);
 		// Same
+		return result;
 	}
 
 	/**
@@ -322,7 +213,7 @@ public:
 	 */
 	T& operator()(size_t row, size_t col)
 	{
-		return _data[row][col];
+		return _data[row * _cols + col];
 	}
 	
 	/**
@@ -333,7 +224,7 @@ public:
 	 */
 	const T& operator()(size_t row, size_t col) const
 	{
-		return _data[row][col];
+		return _data[row * _cols + col];
 	}	
 	
 	/**
@@ -346,7 +237,7 @@ public:
 		{
 			for (size_t col = 0; col < _cols; ++col)
 			{
-				result(col, row) = _data[row][col];
+				result(col, row) = (*this)(row, col);
 			}
 		}
 		return result;
@@ -366,7 +257,7 @@ public:
 		T result(0);
 		for (size_t i = 0; i < _rows; ++i)
 		{
-			result += _data[i][i];
+			result += (*this)(i, i);
 		}
 		return result;
 	}
@@ -410,12 +301,12 @@ public:
 
 	const_iterator begin()
 	{
-		return const_iterator(*this);
+		return _data.begin();
 	}
 
 	const_iterator end()
 	{
-		return const_iterator(*this, _rows, 0);
+		return _data.end();
 	}
 
 	bool isSquareMatrix()
@@ -428,7 +319,7 @@ public:
 		_isParallel = isParallel;
 	}
 
-private:
+private:/*
 	static void _addRow(MatRow& row1, const MatRow& row2, bool add = true)
 	{
 		if (add)
@@ -459,11 +350,11 @@ private:
 		{
 			threads[row].join();
 		}
-	}
+	}*/
 
 	bool _isParallel;
 	size_t _rows, _cols;
-	std::vector<MatRow> _data;
+	MatData _data;
 };
 
 /**

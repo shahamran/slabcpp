@@ -118,20 +118,22 @@ int main()
 }
 
 template <typename T>
-void checkIterators(Matrix<T>& mat){
-std::cout<<"Vals:"<<std::endl;
+void checkIterators(Matrix<T>& mat)
+{
+	std::cout << "Vals:" << std::endl;
 	typename Matrix<T>::const_iterator it;
-  for ( it = mat.begin() ; it != mat.end(); ++it){
-    std::cout << ' ' << *it;
- }
-  std::cout << '\n';
+	for (it = mat.begin(); it != mat.end(); ++it)
+	{
+		std::cout << ' ' << *it;
+	}
+	std::cout << '\n';
 
-/* No need to imlement non-const  iterator 
-  for (typename Matrix<T>::iterator it = mat.begin() ; it != mat.end(); ++it){
-    (*it) = *it +1;;
- }
- std::cout <<std::endl << "Incremented Matrix:" <<std::endl <<mat <<std::endl;
- */
+	/* No need to imlement non-const  iterator
+	  for (typename Matrix<T>::iterator it = mat.begin() ; it != mat.end(); ++it){
+		(*it) = *it +1;;
+	 }
+	 std::cout <<std::endl << "Incremented Matrix:" <<std::endl <<mat <<std::endl;
+	 */
 }
 
 template <typename T>

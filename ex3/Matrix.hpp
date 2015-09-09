@@ -17,14 +17,105 @@ template <typename T>
 class Matrix
 {
 public:
-
 	typedef T value_type;
 	typedef std::vector<T> MatRow; // A row in the matrix
+	typedef std::vector<MatRow> MatData;
 
+	/**
+	 * A const iterator object for a matrix class.
+	 */
 	class const_iterator
 	{
-	public:
+	private:
+		size_t _row, _col;
+		const Matrix& _mat;
 
+		void _increment()
+		{
+			if (++_col == _mat._cols)
+			{
+				++_row;
+				_col = 0;
+			}
+		}
+
+		void _decrement()
+		{
+			if (_col-- == 0)
+			{
+				--_row;
+				_col = _mat._cols - 1;
+			}
+		}
+	public:
+		typedef const_iterator self_type;
+		typedef T value_type;
+		typedef T& reference;
+		typedef T* pointer;
+		typedef std::bidirectional_iterator_tag iterator_category;
+
+		const_iterator()
+		{
+
+		}
+
+		const_iterator(const Matrix& mat, size_t row, size_t col) : _row(row), _col(col), _mat(mat)
+		{
+		}
+
+		const_iterator(const Matrix& mat) : const_iterator(mat, 0, 0)
+		{
+		}
+
+		const_iterator(const self_type& other) : const_iterator(other._mat, other._row, other._col)
+		{			
+		}
+
+		self_type operator++(int junk)
+		{
+			self_type i = *this;
+			_increment();
+			return i; 
+		}
+
+		self_type operator++() 
+		{
+			_increment(); 
+			return *this; 
+		}
+
+		self_type operator--(int junk)
+		{
+			self_type i = *this;
+			_decrement();
+			return i;
+		}
+
+		self_type operator--()
+		{
+			_decrement();
+			return *this;
+		}
+
+		const value_type& operator*() 
+		{
+			return _mat(_row,_col); 
+		}
+
+		const value_type* operator->() 
+		{
+			return &(_mat._data[_row][_col]); 
+		}
+
+		bool operator==(const self_type& rhs) 
+		{
+			return _row == rhs._row && _col == rhs._col;
+		}
+
+		bool operator!=(const self_type& rhs) 
+		{
+			return _row != rhs._row || _col != rhs._col;
+		}
 	};
 
 	/**
@@ -100,11 +191,16 @@ public:
 	{
 		if ((rows * cols) != cells.size())
 		{
-
+			// Throw exception
 		}
-		// Use matrix iterator do assign values.
-		// TODO
-		// ...
+		auto curr = cells.begin();
+		for (size_t row = 0; row < _rows; ++row)
+		{
+			for (size_t col = 0; col < _cols; ++col)
+			{
+				_data[row][col] = *curr++;
+			}
+		}
 	}
 
 	/**
@@ -146,7 +242,7 @@ public:
 		}
 		else
 		{
-			for (size_t row = 0; row < _rows, ++row)
+			for (size_t row = 0; row < _rows; ++row)
 			{
 				_addRow(result._data[row], rhs._data[row]);
 			}
@@ -173,7 +269,7 @@ public:
 		}
 		else
 		{
-			for (size_t row = 0; row < _rows, ++row)
+			for (size_t row = 0; row < _rows; ++row)
 			{
 				_addRow(result._data[row], rhs._data[row], false);
 			}
@@ -319,7 +415,12 @@ public:
 
 	const_iterator end()
 	{
-		return const_iterator(_rows, 0, *this);
+		return const_iterator(*this, _rows, 0);
+	}
+
+	bool isSquareMatrix()
+	{
+		return _cols == _rows;
 	}
 
 	void setParallel(bool isParallel)

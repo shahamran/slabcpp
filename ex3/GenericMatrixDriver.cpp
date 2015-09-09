@@ -126,11 +126,12 @@ std::cout<<"Vals:"<<std::endl;
  }
   std::cout << '\n';
 
+/* No need to imlement non-const  iterator 
   for (typename Matrix<T>::iterator it = mat.begin() ; it != mat.end(); ++it){
     (*it) = *it +1;;
  }
  std::cout <<std::endl << "Incremented Matrix:" <<std::endl <<mat <<std::endl;
- 
+ */
 }
 
 template <typename T>
@@ -206,7 +207,7 @@ void binaryOperation(const int operatorChoice)
 	std::cout << m2;
 
 	Matrix<T> resultMat;
-	//assert(m1);
+assert(m1==m1);
 
 	switch(operatorChoice)
 	{
@@ -226,6 +227,7 @@ void binaryOperation(const int operatorChoice)
 	 case MUL:
 		 try
 		 {
+		 	// it was before 			 assert(m1.rows()==m2.colls()); which is a mistake			 
 			 assert(m1.cols()==m2.rows());			 
 			 resultMat = m1 * m2;
 		 }
@@ -292,9 +294,8 @@ void getNumFromString(const std::string &str, Complex *num)
 	 std::istringstream iss(str);
 	 double r,i=0;
 	 iss>>r;
-	 bool b = (iss >> i);
-	 if (!b)
-	 {
+	 bool b=(iss>>i);
+	 if (!b ){
 	 	i=0;
 	 };
 	Complex number(r,i);

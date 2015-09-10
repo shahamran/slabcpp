@@ -303,11 +303,11 @@ public:
 	{
 		for (size_t row = 0; row < mat._rows; ++row)
 		{
-			for (size_t col = 0; col < mat._cols - 1; ++col)
+			for (size_t col = 0; col < mat._cols; ++col)
 			{
 				os << mat(row, col) << PRINT_COLS_SEPARATOR;
 			}
-			os << mat(row, mat._cols - 1) << PRINT_ROWS_SEPARATOR;
+			os << PRINT_ROWS_SEPARATOR;
 		}
 		return os;
 	}

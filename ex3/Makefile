@@ -5,7 +5,7 @@ TEST_NAME = test
 PARALLEL = ParallelChecker
 PARALLEL_FILES = ParallelChecker.cpp Complex.cpp MatrixExceptions.cpp
 TAR_NAME = ex3.tar
-TAR_FILES = Matrix.hpp MatrixExceptions.hpp MatrixExceptions.cpp README
+TAR_FILES = Matrix.hpp MatrixExceptions.hpp MatrixExceptions.cpp README Makefile
 VALGRIND_FLAGS = --leak-check=full --show-possibly-lost=yes --show-reachable=yes \
 			     --undef-value-errors=yes
 

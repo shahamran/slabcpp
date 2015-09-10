@@ -35,6 +35,6 @@ tar: ${TAR_FILES}
 
 # Cleans up the mess (object files, executables and tests)
 clean:
-	rm -fv *.o *.gch *.exe* ${TEST_NAME} ${PARALLEL}
+	rm -fv *.o *.gch *.exe* ${TEST_NAME} ${PARALLEL} ${TAR_NAME}
 
 .PHONY: clean all tar Matrix

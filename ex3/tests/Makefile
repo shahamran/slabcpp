@@ -1,4 +1,4 @@
-CPPFLAGS=-std=c++11 -Wall -Wextra -Wvla -O
+CPPFLAGS=-std=c++11 -Wall -Wextra -Wvla -O -DNDEBUG
 
 .SUFFIXES:
 
@@ -8,7 +8,7 @@ CPPFLAGS=-std=c++11 -Wall -Wextra -Wvla -O
 GMD: GenericMatrixDriver.o  Complex.o Matrix.hpp MatrixExceptions.o
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
-PAR: ParallelChecker.o Complex.o Matrix.hpp MatrixExceptions.hpp
+PAR: ParallelChecker.o Complex.o Matrix.hpp MatrixExceptions.o
 	$(CXX) $(CPPFLAGS) $^ -o $@ -lpthread
 
 clean:

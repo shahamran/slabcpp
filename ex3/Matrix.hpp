@@ -488,7 +488,7 @@ private:
 			{	// Direct access to avoid the boundry check of the operator().
 				// This is equivalent to: dest(i, j) += lhs(i, k) * rhs(k, j);
 				dest._data[i * dest._cols + j] += lhs._data[i * lhs._cols + k] *
-					rhs._data[k * rhs._cols + j];
+												  rhs._data[k * rhs._cols + j];
 			}
 		}
 	}

@@ -405,7 +405,7 @@ private:
 	 * @throw bad_addition In case the matrix dimensions don't fit, a bad_addition
 	 * exception is thrown.
 	 */
-	void _addOrSubtract(Matrix& result, const Matrix& rhs, bool add = true)
+	void _addOrSubtract(Matrix& result, const Matrix& rhs, bool add = true) const
 	{
 		if (_rows != rhs._rows || _cols != rhs._cols)
 		{

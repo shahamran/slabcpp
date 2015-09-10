@@ -18,6 +18,11 @@
 #define PRINT_ROWS_SEPARATOR std::endl
 
 // ------------------------ class definition ------------------------
+/**
+ * This class represents a generic matrix object that can contain every element T
+ * that supports: operators +, +=, -, -=, *, =, ==, !=, <<
+ * and a constructor that takes 0 as an argument (T(0) compiles and runs).
+ */
 template <typename T>
 class Matrix
 {

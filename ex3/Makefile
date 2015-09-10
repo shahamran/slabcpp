@@ -18,7 +18,7 @@ ${PARALLEL}: ${PARALLEL_FILES} Complex.h Matrix.hpp MatrixExceptions.hpp
 	${CC} ${C_FLAGS} -O -DNDEBUG ${PARALLEL_FILES} -o $@
 
 # The generic matrix driver toolset
-${TEST_NAME}: Complex.o GenericMatrixDriver.o MatrixExceptions.o
+${TEST_NAME}: Complex.o GenericMatrixDriver.o
 	${CC} ${C_FLAGS} $^ -o $@
 
 # Valgrind test

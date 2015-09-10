@@ -142,7 +142,7 @@ public:
 			auto src_it = rhs._data.cbegin();
 			while (dest_it != result._data.end())
 			{
-				*dest_it += *src_it;
+				*dest_it++ += *src_it++;
 			}
 		}
 		return result;
@@ -171,7 +171,7 @@ public:
 			auto src_it = rhs._data.cbegin();
 			while (dest_it != result._data.end())
 			{
-				*dest_it -= *src_it;
+				*dest_it++ -= *src_it++;
 			}
 		}
 		return result;

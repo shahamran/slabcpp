@@ -1,4 +1,0 @@
-29c29
-< Addition/Subtraction could not be performed: A 4x6 matrix cannot be added to a 2x3 matrix
----
-> cannot addition matrices of different sizes.

@@ -1,4 +1,0 @@
-27c27
-< Addition/Subtraction could not be performed: A 3x5 matrix cannot be added to a 1x2 matrix
----
-> cannot addition matrices of different sizes.

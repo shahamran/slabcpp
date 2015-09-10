@@ -106,4 +106,20 @@ public:
 	const char* what() const throw() override;
 };
 
+/**
+ *
+ */
+class matrix_index_out_of_range : public std::out_of_range
+{
+protected:
+	static std::ostringstream _oss;
+	MatDimensions _dims, _index;
+
+public:
+
+	matrix_index_out_of_range(MatDimensions dims, MatDimensions index);
+
+	const char* what() const throw() override;
+};
+
 #endif

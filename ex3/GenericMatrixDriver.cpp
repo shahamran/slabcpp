@@ -30,6 +30,12 @@
 
 #define NUM_KNOWN_FIELDS 3
 
+void doExit()
+{
+	system("pause");
+	exit(1);
+}
+
 const std::string OPERATIONS[6] = {"matrix + matrix", "matrix * matrix", "transpose", 
 				   "trace"};
 const int NUM_OPS = 4;
@@ -147,7 +153,18 @@ void unaryOperation(const int operatorChoice)
 	int rows, cols;
 	std::vector<T> cells;
 	readMatrixInfo(rows, cols, cells);
-	Matrix<T> m(rows, cols, cells);
+	Matrix<T> m;
+	try
+	{
+		m = Matrix<T>(rows, cols, cells);
+	}
+	catch (std::exception& exception)
+	{
+		std::cout << "Got Exception from Matrix with message: "
+			<< std::endl << exception.what() << std::endl;
+		doExit();
+	}
+	
 	std::cout << MAT_LINE << std::endl << "got matrix:" << std::endl;
 	std::cout << m;
 
@@ -161,13 +178,15 @@ void unaryOperation(const int operatorChoice)
 		 printResultMatrix(resultMat);
 		 break;
 	 case TRACE:
-		 if (m.isSquareMatrix())
+		 try
 		 {
 			 std::cout << "The matrix is square and its trace is " << m.trace() << std::endl;
 		 }
-		 else
+		 catch (std::exception& exception)
 		 {
-			 std::cout << "The matrix isn't square" << std::endl;
+			 std::cout << "Got Exception from Matrix with message: "
+				 << std::endl << exception.what() << std::endl;
+			 doExit();
 		 }
 		 break;
 /*	 case SCALAR_TIMES_MATRIX:
@@ -224,21 +243,21 @@ assert(m1==m1);
 		 {
 			 std::cout << "Got Exception from Matrix with message: " 
 				   << std::endl << exception.what() << std::endl;
-			 exit(1);
+			 doExit();
 		 }
 		 break;
 	 case MUL:
 		 try
 		 {
 		 	// it was before 			 assert(m1.rows()==m2.colls()); which is a mistake			 
-			 assert(m1.cols()==m2.rows());			 
+			 //assert(m1.cols()==m2.rows());			 
 			 resultMat = m1 * m2;
 		 }
 		 catch (std::exception& exception)
 		 {
 			 std::cout << "Got Exception from Matrix with message: " 
 				   << std::endl << exception.what() << std::endl;
-			 exit(1);
+			 doExit();
 		 }
 		 break;
 	}

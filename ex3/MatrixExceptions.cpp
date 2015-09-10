@@ -1,5 +1,8 @@
 #include "MatrixExceptions.hpp"
+
 #define UNDEFINED 0
+#define LEFT_BOUND '<'
+#define RIGHT_BOUND '>'
 
 // MatDimensions struct
 
@@ -15,14 +18,7 @@ MatDimensions::MatDimensions(size_t rows, size_t cols) :
 
 std::ostream& operator<<(std::ostream& os, const MatDimensions& dims)
 {
-	if (dims._rows && dims._cols)
-	{
-		os << dims._rows << "x" << dims._cols;
-	}
-	else
-	{
-		os << "<empty>";
-	}
+	os << LEFT_BOUND << dims._rows << "x" << dims._cols << RIGHT_BOUND;
 	return os;
 }
 
@@ -32,7 +28,7 @@ std::ostringstream bad_dimensions::_oss("");
 std::string bad_dimensions::_msg("");
 
 bad_dimensions::bad_dimensions(MatDimensions dim1, MatDimensions dim2, const std::string& msg) :
-	logic_error(msg), _dim1(dim1), _dim2(dim2)
+	logic_error(msg.c_str()), _dim1(dim1), _dim2(dim2)
 {
 }
 
@@ -123,4 +119,21 @@ const char* bad_trace::what() const throw()
 	_oss << "Got " << _dim1 << " matrix";
 	_msg = _oss.str();
 	return bad_dimensions::what();
+}
+
+// out_of_matrix_range
+
+std::ostringstream matrix_index_out_of_range::_oss("");
+
+matrix_index_out_of_range::matrix_index_out_of_range(MatDimensions dims, MatDimensions index) :
+	out_of_range("Index out of range"), _dims(dims), _index(index)
+{
+}
+
+const char* matrix_index_out_of_range::what() const throw()
+{
+	_oss.str("");
+	_oss << out_of_range::what() << ": there is no index " << _index
+		 << " in a " << _dims << " matrix";
+	return _oss.str().c_str();
 }

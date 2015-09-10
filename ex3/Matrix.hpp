@@ -37,24 +37,34 @@ public:
 
 	/**
 	 * Constructs a matrix with the given dimensions and default values (0).
+	 * Note that this method is MORE efficient than creating an empty vector and
+	 * then pushing elements to it.
 	 * @param rows The number of rows
 	 * @param cols The number of columns
 	 */
 	Matrix(size_t rows, size_t cols) :
 		_rows(rows), _cols(cols)
 	{
-		// make sure matrix dimensions are positive
-		if (rows < MINIMAL_SIZE || cols < MINIMAL_SIZE)
-		{
+		// make sure matrix dimensions are positive or both 0 (< MINIMAL_SIZE)
+		if (rows < MINIMAL_SIZE && cols < MINIMAL_SIZE)
+		{	// Create an empty matrix
+			_data = MatData();
+		}
+		else if (rows < MINIMAL_SIZE || cols < MINIMAL_SIZE)
+		{	// Throw an exception
 			throw non_positive();
 		}
-		_data = MatData(rows * cols, DEFAULT_VALUE);
+		else
+		{	// Create a vector with the given size with default values
+			_data = MatData(rows * cols, DEFAULT_VALUE);
+		}		
 	}
 
 	/**
 	 * Constructs a default sized matrix (1x1) with default value (0).
 	 */
-	Matrix() : Matrix(DEFAULT_SIZE, DEFAULT_SIZE)
+	Matrix() : 
+		Matrix(DEFAULT_SIZE, DEFAULT_SIZE)
 	{
 	}
 
@@ -92,6 +102,7 @@ public:
 		{
 			throw no_match(MatDimensions(rows, cols), MatDimensions(1, cells.size()));
 		}
+		// Copy the data to the matrix.
 		std::copy(cells.begin(), cells.end(), _data.begin());
 	}
 
@@ -241,6 +252,10 @@ public:
 	 */
 	T& operator()(size_t row, size_t col)
 	{
+		if (row >= _rows || col >= _cols)
+		{
+			throw matrix_index_out_of_range(MatDimensions(_rows, _cols), MatDimensions(row, col));
+		}
 		return _data[row * _cols + col];
 	}
 	
@@ -252,7 +267,10 @@ public:
 	 */
 	const T& operator()(size_t row, size_t col) const
 	{
-		// I prefer one line of code duplication than another method call.
+		if (row >= _rows || col >= _cols)
+		{
+			throw matrix_index_out_of_range(MatDimensions(_rows, _cols), MatDimensions(row, col));
+		}
 		return _data[row * _cols + col];
 	}	
 	
@@ -281,7 +299,7 @@ public:
 	{
 		if (_rows != _cols)
 		{
-			//throw bad_trace(MatDimensions(_rows, _cols));
+			throw bad_trace(MatDimensions(_rows, _cols));
 		}
 		T result(DEFAULT_VALUE);
 		for (size_t i = 0; i < _rows; ++i)

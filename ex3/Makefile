@@ -23,7 +23,7 @@ ${TEST_NAME}: Complex.o GenericMatrixDriver.o MatrixExceptions.o
 
 # Valgrind test
 ValgrindMe: ${TEST_NAME}
-	valgrind ${VALGRIND_FLAGS} ./{TEST_NAME}
+	valgrind ${VALGRIND_FLAGS} ./${TEST_NAME}
 
 # The rule for creating .o files
 %.o: %.cpp

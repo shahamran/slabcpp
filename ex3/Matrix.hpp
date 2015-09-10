@@ -1,7 +1,7 @@
 #ifndef _MATRIX_HPP
 #define _MATRIX_HPP
 
-// ------------------ includes ------------------------
+// --------------------------- includes -----------------------------
 #include <iostream>	// cout
 #include <vector>
 #include <thread>	// multi-threading
@@ -10,14 +10,14 @@
 #include "Complex.h"
 #include "MatrixExceptions.hpp"
 
-// ----------------- MACROS ---------------------------
+// --------------------------- MACROS -------------------------------
 #define DEFAULT_VALUE 0 // Default matrix entries value
 #define DEFAULT_SIZE 1
 #define MINIMAL_SIZE 1
 #define PRINT_COLS_SEPARATOR '\t'
 #define PRINT_ROWS_SEPARATOR std::endl
 
-// -------------- class definition ---------------------
+// ------------------------ class definition ------------------------
 template <typename T>
 class Matrix
 {
@@ -42,6 +42,8 @@ public:
 		std::swap(mat._data, other._data);
 		return;
 	}
+
+	// ----------------------- constructors -------------------------
 
 	/**
 	 * Constructs a matrix with the given dimensions and default values (0).
@@ -128,7 +130,7 @@ public:
 		std::copy(cells.begin(), cells.end(), _data.begin());
 	}
 
-	// -------------------- operators -----------------------
+	// -------------------- operators -------------------------------
 
 	/**
 	 * Change this matrix to be the same as another.
@@ -277,7 +279,30 @@ public:
 			throw matrix_index_out_of_range(MatDimensions(_rows, _cols), MatDimensions(row, col));
 		}
 		return _data[row * _cols + col];
-	}	
+	}
+
+	/**
+	* Writes the matrix values to a given outstream in the following format:
+	* Every two columns are separated by PRINT_COLS_SEPARATOR ('\t').
+	* Every two line are separated by PRINT_ROWS_SEPARATOR (std::endl - new line).
+	* (See MACROS).
+	* @param os The output stream to write to.
+	* @param mat The matrix to write.
+	*/
+	friend std::ostream& operator<<(std::ostream& os, const Matrix& mat)
+	{
+		for (size_t row = 0; row < mat._rows; ++row)
+		{
+			for (size_t col = 0; col < mat._cols; ++col)
+			{
+				os << mat(row, col) << PRINT_COLS_SEPARATOR;
+			}
+			os << PRINT_ROWS_SEPARATOR;
+		}
+		return os;
+	}
+
+	// ---------------------- member functions ----------------------
 	
 	/**
 	 * @return The transpose of this matrix.
@@ -314,29 +339,6 @@ public:
 		}
 		return result;
 	}
-	
-	/**
-	 * Writes the matrix values to a given outstream in the following format:
-	 * Every two columns are separated by PRINT_COLS_SEPARATOR ('\t').
-	 * Every two line are separated by PRINT_ROWS_SEPARATOR (std::endl - new line).
-	 * (See MACROS).
-	 * @param os The output stream to write to.
-	 * @param mat The matrix to write.
-	 */
-	friend std::ostream& operator<<(std::ostream& os, const Matrix& mat)
-	{
-		for (size_t row = 0; row < mat._rows; ++row)
-		{
-			for (size_t col = 0; col < mat._cols; ++col)
-			{
-				os << mat(row, col) << PRINT_COLS_SEPARATOR;
-			}
-			os << PRINT_ROWS_SEPARATOR;
-		}
-		return os;
-	}
-	
-	// ---------------------- member functions --------------------
 
 	/**
 	 * @return The number of rows in this matrix.
@@ -395,7 +397,7 @@ public:
 	}
 
 private:
-	// ------------------- Helper functions & methods ----------------
+	// ------------------ Helper functions & methods ----------------
 
 	/**
 	 * Checks the matrices dimensions and performs addition / subtraction.
@@ -421,45 +423,6 @@ private:
 			{	// Use the helper _addRow function to calculate the result
 				_addRow(result, rhs, row, add);
 			}
-		}
-	}
-
-	/**
-	 * This static function gets a result matrix reference, lhs and rhs matrices and a row number
-	 * and calculates the values of the result matrix's row.
-	 */
-	static void _multiplyRow(Matrix& dest, const Matrix& lhs, const Matrix& rhs, size_t i)
-	{
-		for (size_t j = 0; j < rhs._cols; ++j)
-		{
-			for (size_t k = 0; k < lhs._cols; ++k)
-			{	// Direct access to avoid the boundry check of the operator().
-				// This is equivalent to: dest(i, j) += lhs(i, k) * rhs(k, j);
-				dest._data[i * dest._cols + j] += lhs._data[i * lhs._cols + k] * 
-												  rhs._data[k * rhs._cols + j];
-			}
-		}
-	}
-
-	/**
-	 * Calculates the result of multiplication of this matrix by another one.
-	 * @param dest the result matrix (dimensions: this.rows() x rhs.cols())
-	 * @param rhs the matrix to multiply
-	 * @throw
-	 */
-	void _multithreadedMultiplication(Matrix& dest, const Matrix& rhs) const
-	{
-		std::vector<std::thread> threads(dest._rows);
-		for (size_t row = 0; row < dest._rows; ++row)
-		{
-			threads[row] = std::thread(_multiplyRow,
-									   std::ref(dest),
-									   std::cref(*this),
-									   std::cref(rhs), row);
-		}
-		for (size_t row = 0; row < _rows; ++row)
-		{
-			threads[row].join();
 		}
 	}
 
@@ -511,15 +474,55 @@ private:
 			threads[row].join();
 		}
 	}
+
+
+	/**
+	* This static function gets a result matrix reference, lhs and rhs matrices and a row number
+	* and calculates the values of the result matrix's row.
+	*/
+	static void _multiplyRow(Matrix& dest, const Matrix& lhs, const Matrix& rhs, size_t i)
+	{
+		for (size_t j = 0; j < rhs._cols; ++j)
+		{
+			for (size_t k = 0; k < lhs._cols; ++k)
+			{	// Direct access to avoid the boundry check of the operator().
+				// This is equivalent to: dest(i, j) += lhs(i, k) * rhs(k, j);
+				dest._data[i * dest._cols + j] += lhs._data[i * lhs._cols + k] *
+					rhs._data[k * rhs._cols + j];
+			}
+		}
+	}
+
+	/**
+	* Calculates the result of multiplication of this matrix by another one.
+	* @param dest the result matrix (dimensions: this.rows() x rhs.cols())
+	* @param rhs the matrix to multiply
+	* @throw
+	*/
+	void _multithreadedMultiplication(Matrix& dest, const Matrix& rhs) const
+	{
+		std::vector<std::thread> threads(dest._rows);
+		for (size_t row = 0; row < dest._rows; ++row)
+		{
+			threads[row] = std::thread(_multiplyRow,
+				std::ref(dest),
+				std::cref(*this),
+				std::cref(rhs), row);
+		}
+		for (size_t row = 0; row < _rows; ++row)
+		{
+			threads[row].join();
+		}
+	}
 	
-	// ------------------- Data members ----------------
+	// ----------------------- Data members -------------------------
 
 	// s_isParallel - static bool to determine whether to use multithreading or not.
 	static bool s_isParallel;
 	size_t _rows, _cols;
 	// MatData is just a vector of T objects that is the matrix's data
 	MatData _data;
-}; // ------ class definition ends here -------------
+}; // ----------------- class definition ends here ------------------
 
 // Multithreading is off by default.
 template <typename T>
@@ -530,6 +533,7 @@ bool Matrix<T>::s_isParallel = false;
  * When called with a complex matrix, returns the hermitian transpose matrix of this one.
  * The result <A*> satisfies: for evey 0 <= i < rows, 0 <= j < cols: A*(i,j) = A(j,i).conj()
  * @return The conjugate transpose of this matrix.
+ * @throw bad_alloc if memory for the result matrix cannot be allocated
  */
 template<>
 const Matrix<Complex> Matrix<Complex>::trans() const

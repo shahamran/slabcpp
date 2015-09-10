@@ -1,0 +1,24 @@
+__Parallel vs. Sequential__
+
+the numbers are the time values in seconds
+
+				       big			          small		
+			|	*		|	+		| *			| +
+parallel 	|	1.14243	|	0.0745	| 1.47e-04	| 1.55e-04
+			|			|			|			|
+sequential	|	16.6572	|	0.01398	| 1.02e-06	| 1.378e-06
+
+First, lets notice that A LOT more calculations are made in the * operation opposed to +
+(O(N ^ 3) complexity on multiplication vs O(N ^ 2) where N is ~ the number of rows/columns, 
+assuming the matrices are almost square).
+
+1) 	The program ran MUCH faster on multiplication of the big set of data in parallel mode
+	This is probably because a lot of calculations were made simultanuosly.
+	On the small set the sequential performance was slightly better, probably because of the
+	initialization of threads and extra functions/methods calls (std::ref, std::bind etc.),
+	which were more significant when there wasn't a lot of data to process.
+
+2)	As I mentioned above, the total complexity of multiplication is much bigger than addition,
+	thus the performance differences (on the big set) between the operations.
+	On the small data set, the multiplication is slightly faster, maybe because my implementation
+	includes both addition and subtraction and this needs extra conditions checks.

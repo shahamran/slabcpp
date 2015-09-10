@@ -5,10 +5,10 @@ CPPFLAGS=-std=c++11 -Wall -Wextra -Wvla -O
 %.o: %.cpp
 	$(CXX) $(CPPFLAGS) -c $<
 
-GMD: GenericMatrixDriver.o Complex.o Matrix.hpp
+GMD: GenericMatrixDriver.o Complex.o Matrix.hpp MatrixExcpetions.o
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
-PAR: ParallelChecker.o Complex.o Matrix.hpp
+PAR: ParallelChecker.o Complex.o Matrix.hpp MatrixExcpetions.o
 	$(CXX) $(CPPFLAGS) $^ -o $@ -lpthread
 
 clean:

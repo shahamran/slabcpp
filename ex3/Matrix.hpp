@@ -102,7 +102,7 @@ public:
 	 * @param rhs The matrix to assign.
 	 * @return a reference to the freshly changed matrix.
 	 */
-	Matrix<T>& operator=(Matrix<T> rhs)
+	Matrix& operator=(Matrix rhs)
 	{
 		swap(*this, rhs);
 		return *this;
@@ -114,13 +114,13 @@ public:
 	 * rhs.rows() == this->rows() && rhs.cols() == this->cols()
 	 * @return The result of addition (matrix of the same dimensions).
 	 */
-	const Matrix<T> operator+(const Matrix<T>& rhs) const
+	const Matrix operator+(const Matrix& rhs) const
 	{
 		if (_rows != rhs._rows || _cols != rhs._cols)
 		{
 			throw bad_addition(MatDimensions(_rows, _cols), MatDimensions(rhs._rows, rhs._cols));
 		}
-		Matrix<T> result(*this);
+		Matrix result(*this);
 		if (s_isParallel)
 		{
 			_multithreadAddition(result, rhs);
@@ -143,13 +143,13 @@ public:
 	 * rhs.rows() == this->rows() && rhs.cols() == this->cols()
 	 * @return The result of subtraction matrix of the same dimensions).
 	 */
-	const Matrix<T> operator-(const Matrix<T>& rhs) const
+	const Matrix operator-(const Matrix& rhs) const
 	{
 		if (_rows != rhs._rows || _cols != rhs._cols)
 		{
 			throw bad_addition(MatDimensions(_rows, _cols), MatDimensions(rhs._rows, rhs._cols));
 		}
-		Matrix<T> result(*this);
+		Matrix result(*this);
 		if (s_isParallel)
 		{
 			_multithreadAddition(result, rhs, false);
@@ -171,14 +171,14 @@ public:
 	 * @param rhs A matrix that satisfies: rhs.rows() == this_matrix.cols()
 	 * @return The result of the multiplication.
 	 */
-	const Matrix<T> operator*(const Matrix<T>& rhs) const
+	const Matrix operator*(const Matrix& rhs) const
 	{
 		if (_cols != rhs._rows)
 		{
 			throw bad_multiplication(MatDimensions(_rows, _cols), 
 									 MatDimensions(rhs._rows, rhs._cols));
 		}
-		Matrix<T> result(_rows, rhs._cols);
+		Matrix result(_rows, rhs._cols);
 		if (s_isParallel)
 		{
 			_multithreadedMultiplication(result, rhs);
@@ -204,7 +204,7 @@ public:
 	 * @param rhs The matrix to compare to.
 	 * @return true if the matrices are identical, false otherwise.
 	 */
-	bool operator==(const Matrix<T>& rhs) const
+	bool operator==(const Matrix& rhs) const
 	{
 		if (_rows != rhs._rows || _cols != rhs._cols)
 		{
@@ -228,7 +228,7 @@ public:
 	 * @param rhs The matrix to compare to.
 	 * @return !(*this == rhs) (see operator==)
 	 */
-	bool operator!=(const Matrix<T>& rhs) const
+	bool operator!=(const Matrix& rhs) const
 	{
 		return !(*this == rhs);
 	}
@@ -259,9 +259,9 @@ public:
 	/**
 	 * @return The transpose of this matrix.
 	 */
-	const Matrix<T> trans() const
+	const Matrix trans() const
 	{
-		Matrix<T> result(_cols, _rows);
+		Matrix result(_cols, _rows);
 		for (size_t row = 0; row < _rows; ++row)
 		{
 			for (size_t col = 0; col < _cols; ++col)
@@ -281,7 +281,7 @@ public:
 	{
 		if (_rows != _cols)
 		{
-			throw bad_trace(MatDimensions(_rows, _cols));
+			//throw bad_trace(MatDimensions(_rows, _cols));
 		}
 		T result(DEFAULT_VALUE);
 		for (size_t i = 0; i < _rows; ++i)
@@ -299,7 +299,7 @@ public:
 	 * @param os The output stream to write to.
 	 * @param mat The matrix to write.
 	 */
-	friend std::ostream& operator<<(std::ostream& os, const Matrix<T>& mat)
+	friend std::ostream& operator<<(std::ostream& os, const Matrix& mat)
 	{
 		for (size_t row = 0; row < mat._rows; ++row)
 		{
@@ -355,24 +355,25 @@ public:
 
 private:
 
-	void _multiplyRow(Matrix& dest, const Matrix& rhs, size_t i)
+	static void _multiplyRow(Matrix& dest, const Matrix& lhs, const Matrix& rhs, size_t i)
 	{
 		for (size_t j = 0; j < rhs._cols; ++j)
 		{
-			for (size_t k = 0; k < _cols; ++k)
+			for (size_t k = 0; k < lhs._cols; ++k)
 			{
-				dest(i, j) += (*this)(i, k) * rhs(k, j);
+				dest(i, j) += lhs(i, k) * rhs(k, j);
 			}
 		}
 	}
 
-	void _multithreadedMultiplication(Matrix& dest, const Matrix& rhs)
+	void _multithreadedMultiplication(Matrix& dest, const Matrix& rhs) const
 	{
 		std::vector<std::thread> threads(dest._rows);
 		for (size_t row = 0; row < dest._rows; ++row)
 		{
 			threads[row] = std::thread(_multiplyRow,
 									   std::ref(dest),
+									   std::cref(*this),
 									   std::cref(rhs), row);
 		}
 		for (size_t row = 0; row < _rows; ++row)
@@ -419,8 +420,8 @@ private:
 	MatData _data;
 };
 
-//template <typename T>
-//bool Matrix<T>::s_isParallel = false;
+template <typename T>
+bool Matrix<T>::s_isParallel = false;
 
 /**
  * A specialized transpoe method.

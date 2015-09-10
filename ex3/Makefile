@@ -1,6 +1,6 @@
 CC = g++
 
-C_FLAGS = -std=c++11 -Wall -Wextra
+C_FLAGS = -std=c++11 -Wall -Wextra -pthread
 TEST_NAME = test
 TAR_NAME = ex3.tar
 TAR_FILES = Matrix.hpp MatrixExceptions.hpp

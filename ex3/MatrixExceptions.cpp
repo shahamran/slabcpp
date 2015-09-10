@@ -27,56 +27,100 @@ std::ostream& operator<<(std::ostream& os, const MatDimensions& dims)
 }
 
 // bad_dimensions exception
+
+std::ostringstream bad_dimensions::_oss("");
+std::string bad_dimensions::_msg("");
+
 bad_dimensions::bad_dimensions(MatDimensions dim1, MatDimensions dim2, const std::string& msg) :
 	logic_error(msg), _dim1(dim1), _dim2(dim2)
 {
 }
 
 bad_dimensions::bad_dimensions(MatDimensions dim, const std::string& msg) :
-	logic_error(msg), _dim1(dim), _dim2()
+	bad_dimensions(dim, MatDimensions(), msg)
 {
 }
 
-std::ostringstream bad_dimensions::_oss("");
-
-// non_positive
-
-const char* non_positive::what() const throw()
+const char* bad_dimensions::what() const throw()
 {
 	_oss.str("");
-	_oss << bad_dimensions::what() << ": Cannot construct a matrix with non-positive dimensions";
+	_oss << logic_error::what() << ": " <<  _msg;
 	return _oss.str().c_str();
 }
 
+// non_positive
+
+non_positive::non_positive(const std::string& msg) :
+	bad_dimensions(MatDimensions(), msg)
+{
+}
+
+const char* non_positive::what() const throw()
+{
+	_msg = "Cannot construct a matrix with non-positive dimensions";
+	return bad_dimensions::what();
+}
+
+// no_match exception
+
+no_match::no_match(MatDimensions mat_size, MatDimensions vec_size, const std::string& msg) :
+	bad_dimensions(mat_size, vec_size, msg)
+{
+}
+
+const char* no_match::what() const throw()
+{
+	_oss.str("");
+	_oss << "Cannot fit a " << _dim2 << " sized vector"
+		 << " to a " << _dim1 << " matrix";
+	_msg = _oss.str();
+	return bad_dimensions::what();
+}
+
 // bad_addition exception
-bad_addition::bad_addition(MatDimensions first, MatDimensions second) :
-	bad_dimensions(first, second, "Addition/Subtraction could not be performed")
+
+bad_addition::bad_addition(MatDimensions first, MatDimensions second, const std::string& msg) :
+	bad_dimensions(first, second, msg)
 {
 }
 
 const char* bad_addition::what() const throw()
 {
 	_oss.str("");
-	_oss << bad_dimensions::what() << ": A " << _dim2 << " matrix"
+	_oss << "A " << _dim2 << " matrix"
 				 << " cannot be added to a " << _dim1 << " matrix";
-	return _oss.str().c_str();
+	_msg = _oss.str();
+	return bad_dimensions::what();
 }
 
 // bad_multiplication exception
 
+bad_multiplication::bad_multiplication(MatDimensions first, MatDimensions second, 
+									   const std::string& msg) :
+	bad_dimensions(first, second, msg)
+{
+}
+
 const char* bad_multiplication::what() const throw()
 {
 	_oss.str("");
-	_oss << bad_dimensions::what() << ": A " << _dim1 << " matrix"
-			<< " cannot be multiplied by a " << _dim2 << " matrix";
-	return _oss.str().c_str();
+	_oss << "A " << _dim1 << " matrix"
+		 << " cannot be multiplied by a " << _dim2 << " matrix";
+	_msg = _oss.str();
+	return bad_dimensions::what();
 }
 
 // bad_trace exception
 
+bad_trace::bad_trace(MatDimensions dims, const std::string& msg) :
+	bad_dimensions(dims, msg)
+{
+}
+
 const char* bad_trace::what() const throw()
 {
 	_oss.str("");
-	_oss << bad_dimensions::what() << ": cannot calculate trace on a " << _dim1 << " matrix";
-	return _oss.str().c_str();
+	_oss << "Got " << _dim1 << " matrix";
+	_msg = _oss.str();
+	return bad_dimensions::what();
 }

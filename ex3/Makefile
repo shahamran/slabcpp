@@ -3,9 +3,9 @@ CC = g++
 C_FLAGS = -std=c++11 -Wall -Wextra -Wvla -pthread
 TEST_NAME = test
 PARALLEL = ParallelChecker
-PARALLEL_FILES = ParallelChecker.cpp Complex.cpp MatrixExceptions.cpp
+PARALLEL_FILES = ParallelChecker.cpp Complex.cpp
 TAR_NAME = ex3.tar
-TAR_FILES = Matrix.hpp MatrixExceptions.hpp MatrixExceptions.cpp README Makefile
+TAR_FILES = Matrix.hpp MatrixExceptions.hpp README Makefile
 VALGRIND_FLAGS = --leak-check=full --show-possibly-lost=yes --show-reachable=yes \
 			     --undef-value-errors=yes
 

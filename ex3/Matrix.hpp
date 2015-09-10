@@ -140,7 +140,7 @@ public:
 		{
 			auto dest_it = result._data.begin();
 			auto src_it = rhs._data.cbegin();
-			for (; dest_it != result._data.end(); ++dest_it, ++src_it)
+			while (dest_it != result._data.end())
 			{
 				*dest_it += *src_it;
 			}
@@ -169,7 +169,7 @@ public:
 		{
 			auto dest_it = result._data.begin();
 			auto src_it = rhs._data.cbegin();
-			for (; dest_it != result._data.end(); ++dest_it, ++src_it)
+			while (dest_it != result._data.end())
 			{
 				*dest_it -= *src_it;
 			}
@@ -202,7 +202,7 @@ public:
 				{
 					for (size_t k = 0; k < _cols; ++k)
 					{
-						result(i, j) += (*this)(i, k) * rhs(k, j);
+						result(i, j) += _data[i * _cols + k] * rhs(k, j);
 					}
 				}
 			}

@@ -11,7 +11,7 @@ VALGRIND_FLAGS = --leak-check=full --show-possibly-lost=yes --show-reachable=yes
 
 # Creates Matrix.hpp.gch object file
 Matrix: Matrix.hpp MatrixExceptions.hpp
-	${CC} ${C_FLAGS} -c $^
+	${CC} ${C_FLAGS} -c $<
 
 # Create the optimized parallel check file
 ${PARALLEL}: ${PARALLEL_FILES} Complex.h Matrix.hpp MatrixExceptions.hpp
@@ -33,7 +33,7 @@ ValgrindMe: ${TEST_NAME}
 tar: ${TAR_FILES}
 	tar -cvf ${TAR_NAME} ${TAR_FILES}
 
-# Cleans up the mess (object files and tests)
+# Cleans up the mess (object files, executables and tests)
 clean:
 	rm -fv *.o *.gch *.exe* ${TEST_NAME} ${PARALLEL}
 

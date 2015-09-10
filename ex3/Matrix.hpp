@@ -1,25 +1,33 @@
 #ifndef _MATRIX_HPP
 #define _MATRIX_HPP
 
-#include <iostream>
+// ------------------ includes ------------------------
+#include <iostream>	// cout
 #include <vector>
-#include <thread>
+#include <thread>	// multi-threading
 #include <cassert>
-#include <functional>
+#include <functional>	// 
 #include "Complex.h"
 #include "MatrixExceptions.hpp"
 
-#define DEFAULT_VALUE 0
+// ----------------- MACROS ---------------------------
+#define DEFAULT_VALUE 0 // Default matrix entries value
 #define DEFAULT_SIZE 1
 #define MINIMAL_SIZE 1
 #define PRINT_COLS_SEPARATOR '\t'
 #define PRINT_ROWS_SEPARATOR std::endl
 
+// -------------- class definition ---------------------
 template <typename T>
 class Matrix
 {
 public:
-	typedef T value_type;
+	/**
+	 * MatData is a vector of T elements which represents the matrix data.
+	 * since the data is saved in one vector, the const_iterator and iterator
+	 * are just forwarded to the vector, thus giving us random-access iterators
+	 * (which are bidirectional-iterators++)
+	 */
 	typedef std::vector<T> MatData;
 	typedef typename MatData::const_iterator const_iterator;
 	typedef typename MatData::iterator iterator;
@@ -37,10 +45,13 @@ public:
 
 	/**
 	 * Constructs a matrix with the given dimensions and default values (0).
-	 * Note that this method is MORE efficient than creating an empty vector and
-	 * then pushing elements to it.
+	 * Efficiency note: this method is MORE efficient than creating an empty vector and
+	 * then pushing elements into it (or not specifying the default value)
 	 * @param rows The number of rows
 	 * @param cols The number of columns
+	 * @throw non_positive if non-positive value is given to exactly one of the dimensions
+	 * (row / col) this exception is thrown.
+	 * @throw bad_alloc this is thrown if memory for the matrix could not be allocated
 	 */
 	Matrix(size_t rows, size_t cols) :
 		_rows(rows), _cols(cols)
@@ -62,6 +73,9 @@ public:
 
 	/**
 	 * Constructs a default sized matrix (1x1) with default value (0).
+	 * @throw non_positive if non-positive value is given to exactly one of the dimensions
+	 * (row / col) this exception is thrown.
+	 * @throw bad_alloc this is thrown if memory for the matrix could not be allocated
 	 */
 	Matrix() : 
 		Matrix(DEFAULT_SIZE, DEFAULT_SIZE)
@@ -71,6 +85,7 @@ public:
 	/**
 	 * Deep copy constructor for a given matrix.
 	 * @param rhs The matrix to copy.
+	 * @throw bad_alloc this is thrown if memory for the matrix could not be allocated
 	 */
 	Matrix(const Matrix& rhs) :
 		Matrix(rhs._rows, rhs._cols)
@@ -81,6 +96,8 @@ public:
 	/**
 	 * Move constructor. 'Steals' the given matrix values.
 	 * @param rvalue The matrix to get values from.
+	 * @throw bad_alloc it is unlikely, but this exception can be thrown if memory for a 1x1 
+	 * matrix can't be allocated.
 	 */
 	Matrix(Matrix && rvalue) :
 		Matrix()
@@ -94,6 +111,11 @@ public:
 	 * @param cols The number of columns.
 	 * @param cells A vector of values to assign to this matrix that satisfies: 
 	 * cells.size() == rows * cols.
+	 * @throw non_positive if non-positive value is given to exactly one of the dimensions
+	 * (row / col) this exception is thrown.
+	 * @throw bad_alloc this is thrown if memory for the matrix could not be allocated
+	 * @throw no_match if the given matrix dimensions don't match the given vector's size,
+	 * i.e cells.size() != rows * cols
 	 */
 	Matrix(size_t rows, size_t cols, const MatData& cells) :
 		Matrix(rows, cols)
@@ -106,10 +128,14 @@ public:
 		std::copy(cells.begin(), cells.end(), _data.begin());
 	}
 
+	// -------------------- operators -----------------------
+
 	/**
 	 * Change this matrix to be the same as another.
 	 * Note that this method takes parameters by value which are copied using the
 	 * move / copy constructor thus making it more efficient.
+	 * shouldn't throw exceptions, maybe when calling the copy constructor for the
+	 * by-value copying.
 	 * @param rhs The matrix to assign.
 	 * @return a reference to the freshly changed matrix.
 	 */
@@ -124,56 +150,31 @@ public:
 	 * @param rhs The matrix to add to this one, that satisfies: 
 	 * rhs.rows() == this->rows() && rhs.cols() == this->cols()
 	 * @return The result of addition (matrix of the same dimensions).
+	 * @throw bad_addition In case the matrix dimensions don't fit, a bad_addition
+	 * exception is thrown.
+	 * @throw bad_alloc this is thrown if memory for the result matrix could not be allocated
 	 */
 	const Matrix operator+(const Matrix& rhs) const
 	{
-		if (_rows != rhs._rows || _cols != rhs._cols)
-		{
-			throw bad_addition(MatDimensions(_rows, _cols), MatDimensions(rhs._rows, rhs._cols));
-		}
 		Matrix result(*this);
-		if (s_isParallel)
-		{
-			_multithreadAddition(result, rhs);
-		}
-		else
-		{
-			auto dest_it = result._data.begin();
-			auto src_it = rhs._data.cbegin();
-			while (dest_it != result._data.end())
-			{
-				*dest_it++ += *src_it++;
-			}
-		}
+		_addOrSubtract(result, rhs);
 		return result;
 	}
 
 	/**
 	 * Calculates the subtraction of another matrix from this one.
+	 * Accidently supports multithreading... oh well
 	 * @param rhs The matrix to subtract from this one, that satisfies: 
 	 * rhs.rows() == this->rows() && rhs.cols() == this->cols()
 	 * @return The result of subtraction matrix of the same dimensions).
+	 * @throw bad_addition In case the matrix dimensions don't fit, a bad_addition
+	 * exception is thrown.
+	 * @throw bad_alloc this is thrown if memory for the result matrix could not be allocated
 	 */
 	const Matrix operator-(const Matrix& rhs) const
 	{
-		if (_rows != rhs._rows || _cols != rhs._cols)
-		{
-			throw bad_addition(MatDimensions(_rows, _cols), MatDimensions(rhs._rows, rhs._cols));
-		}
 		Matrix result(*this);
-		if (s_isParallel)
-		{
-			_multithreadAddition(result, rhs, false);
-		}
-		else
-		{
-			auto dest_it = result._data.begin();
-			auto src_it = rhs._data.cbegin();
-			while (dest_it != result._data.end())
-			{
-				*dest_it++ -= *src_it++;
-			}
-		}
+		_addOrSubtract(result, rhs, false); // false value --> subtraction
 		return result;
 	}
 
@@ -181,6 +182,10 @@ public:
 	 * Calculates the multiplication of this matrix by another.
 	 * @param rhs A matrix that satisfies: rhs.rows() == this_matrix.cols()
 	 * @return The result of the multiplication.
+	 * @throw bad_multiplication if rhs.rows() != this_matrix.cols() a bad_multiplication
+	 * exception will be thrown
+	 * @throw bad_alloc if memory for the result matrix cannot be allocated.
+	 * @throw
 	 */
 	const Matrix operator*(const Matrix& rhs) const
 	{
@@ -191,20 +196,15 @@ public:
 		}
 		Matrix result(_rows, rhs._cols);
 		if (s_isParallel)
-		{
+		{	// Perform parallel (by-line) multiplication
 			_multithreadedMultiplication(result, rhs);
 		}
 		else
 		{
+			// Otherwise, perform sequential multiplication
 			for (size_t i = 0; i < _rows; ++i)
-			{
-				for (size_t j = 0; j < rhs._cols; ++j)
-				{
-					for (size_t k = 0; k < _cols; ++k)
-					{
-						result(i, j) += _data[i * _cols + k] * rhs(k, j);
-					}
-				}
+			{	// Use the helper function to multiply
+				_multiplyRow(result, *this, rhs, i);
 			}
 		}
 		return result;
@@ -217,6 +217,7 @@ public:
 	 */
 	bool operator==(const Matrix& rhs) const
 	{
+		// If matrix dimensions don't fit they can't be identical.
 		if (_rows != rhs._rows || _cols != rhs._cols)
 		{
 			return false;
@@ -249,9 +250,11 @@ public:
 	 * @param row The row number (0 to rows() - 1)
 	 * @param col The column number (0 to cols() - 1)
 	 * @return The matrix entry in the given cordinates.
+	 * @throw matrix_index_out_of_range thrown if the given cordinates are out of the
+	 * matrix's dimensions.
 	 */
 	T& operator()(size_t row, size_t col)
-	{
+	{	// note that size_t can't be negative and 0 is OK value.
 		if (row >= _rows || col >= _cols)
 		{
 			throw matrix_index_out_of_range(MatDimensions(_rows, _cols), MatDimensions(row, col));
@@ -264,6 +267,8 @@ public:
 	 * @param row The row number (0 to rows() - 1)
 	 * @param col The column number (0 to cols() - 1)
 	 * @return The matrix entry in the given cordinates (const reference).
+	 * @throw matrix_index_out_of_range thrown if the given cordinates are out of the
+	 * matrix's dimensions.
 	 */
 	const T& operator()(size_t row, size_t col) const
 	{
@@ -276,6 +281,7 @@ public:
 	
 	/**
 	 * @return The transpose of this matrix.
+	 * @throw bad_alloc if memory for the result matrix can't be allocated
 	 */
 	const Matrix trans() const
 	{
@@ -293,7 +299,7 @@ public:
 	/**
 	 * Calculates the trace of this matrix, if it is square.
 	 * @return sum(A(i,i)) for 0 <= i < rows.
-	 * @throws 
+	 * @throw bad_trace if the matrix is not square, this is thrown.
 	 */
 	T trace() const
 	{
@@ -330,6 +336,8 @@ public:
 		return os;
 	}
 	
+	// ---------------------- member functions --------------------
+
 	/**
 	 * @return The number of rows in this matrix.
 	 */
@@ -346,21 +354,36 @@ public:
 		return _cols;
 	}
 
+	/**
+	 * @return An iterator to the first cell of the matrix.
+	 * if the matrix is empty, returns this->end()
+	 */
 	const_iterator begin()
 	{
 		return _data.begin();
 	}
-
+	
+	/**
+	 * @return An iterator to the end of the matrix.
+	 */
 	const_iterator end()
 	{
 		return _data.end();
 	}
 
+	/**
+	 * @return true if the matrix is square, false otherwise.
+	 */
 	bool isSquareMatrix()
 	{
 		return _cols == _rows;
 	}
 
+	/**
+	 * Sets the addition/subtraction/multiplication mode to be parallel/non-parallel
+	 * to enable/disable multithreading on those operations respectively.
+	 * @param isParallel true if you want multithreading, false otherwise
+	 */
 	static void setParallel(bool isParallel)
 	{
 		if (isParallel != s_isParallel)
@@ -372,18 +395,58 @@ public:
 	}
 
 private:
+	// ------------------- Helper functions & methods ----------------
 
+	/**
+	 * Checks the matrices dimensions and performs addition / subtraction.
+	 * @param result The result matrix
+	 * @param rhs The matrix to add to 'dest'
+	 * @param add Determines whether addition or subtraction will be performed
+	 * @throw bad_addition In case the matrix dimensions don't fit, a bad_addition
+	 * exception is thrown.
+	 */
+	void _addOrSubtract(Matrix& result, const Matrix& rhs, bool add = true)
+	{
+		if (_rows != rhs._rows || _cols != rhs._cols)
+		{
+			throw bad_addition(MatDimensions(_rows, _cols), MatDimensions(rhs._rows, rhs._cols));
+		}
+		if (s_isParallel)
+		{
+			_multithreadAddition(result, rhs, add);
+		}
+		else
+		{
+			for (size_t row = 0; row < _rows; ++row)
+			{	// Use the helper _addRow function to calculate the result
+				_addRow(result, rhs, row, add);
+			}
+		}
+	}
+
+	/**
+	 * This static function gets a result matrix reference, lhs and rhs matrices and a row number
+	 * and calculates the values of the result matrix's row.
+	 */
 	static void _multiplyRow(Matrix& dest, const Matrix& lhs, const Matrix& rhs, size_t i)
 	{
 		for (size_t j = 0; j < rhs._cols; ++j)
 		{
 			for (size_t k = 0; k < lhs._cols; ++k)
-			{
-				dest(i, j) += lhs(i, k) * rhs(k, j);
+			{	// Direct access to avoid the boundry check of the operator().
+				// This is equivalent to: dest(i, j) += lhs(i, k) * rhs(k, j);
+				dest._data[i * dest._cols + j] += lhs._data[i * lhs._cols + k] * 
+												  rhs._data[k * rhs._cols + j];
 			}
 		}
 	}
 
+	/**
+	 * Calculates the result of multiplication of this matrix by another one.
+	 * @param dest the result matrix (dimensions: this.rows() x rhs.cols())
+	 * @param rhs the matrix to multiply
+	 * @throw
+	 */
 	void _multithreadedMultiplication(Matrix& dest, const Matrix& rhs) const
 	{
 		std::vector<std::thread> threads(dest._rows);
@@ -400,24 +463,40 @@ private:
 		}
 	}
 
+	/**
+	 * Gets a result matrix, rhs and lhs and calculates the addition/subtracting of rhs and lhs.
+	 * @param dest The result matrix
+	 * @param rhs The right-hand-side matrix
+	 * @param lhs The left-hand-size matrix
+	 * @param add if true, dest = rhs + lhs.
+	 *			otherwise, dest = rhs - lhs.
+	 */
 	static void _addRow(Matrix& dest, const Matrix& rhs, size_t row, bool add = true)
 	{
 		if (add)
 		{
 			for (size_t i = 0; i < dest._cols; ++i)
-			{
-				dest(row, i) += rhs(row, i);
+			{	// Direct access for efficiency.
+				// Equivalent to: dest(row, i) += rhs(row, i);
+				dest._data[row * dest._cols + i] += rhs._data[row * rhs._cols + i];
 			}
 		}
 		else
-		{
+		{ // Same for subtraction, duplicated to avoid checking 'add' on every iteration
 			for (size_t i = 0; i < dest._cols; ++i)
 			{
-				dest(row, i) -= rhs(row, i);
+				dest._data[row * dest._cols + i] -= rhs._data[row * rhs._cols + i];
 			}
 		}		
 	}
 
+	/**
+	 * Calculates the result of adding another matrix to this one.
+	 * @param dest The result matrix (should be a copy of this one)
+	 * @param rhs The matrix to add to dest
+	 * @param add bool that determines whether addition or subtraction will be performed.
+	 * @throw
+	 */
 	void _multithreadAddition(Matrix& dest, const Matrix& rhs, bool add = true) const
 	{
 		std::vector<std::thread> threads(dest._rows);
@@ -432,12 +511,17 @@ private:
 			threads[row].join();
 		}
 	}
+	
+	// ------------------- Data members ----------------
 
+	// s_isParallel - static bool to determine whether to use multithreading or not.
 	static bool s_isParallel;
 	size_t _rows, _cols;
+	// MatData is just a vector of T objects that is the matrix's data
 	MatData _data;
-};
+}; // ------ class definition ends here -------------
 
+// Multithreading is off by default.
 template <typename T>
 bool Matrix<T>::s_isParallel = false;
 

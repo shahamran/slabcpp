@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClCompile Include="..\Complex.cpp" />
     <ClCompile Include="..\GenericMatrixDriver.cpp" />
-    <ClCompile Include="..\MatrixExceptions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Complex.h" />
